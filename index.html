@@ -1523,10 +1523,47 @@
       }
     });
 
+    /* --- SISTEMA DE ACTUALIZACIÓN AUTOMÁTICA PWA (AVISO FLOTANTE) --- */
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateToast();
+              }
+            });
+          });
+        });
+
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
+        });
       });
+    }
+
+    function showUpdateToast() {
+      let toast = document.getElementById('updateToast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'updateToast';
+        toast.style.cssText = "position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1e293b; color:white; padding:12px 20px; border-radius:14px; box-shadow:0 10px 25px rgba(0,0,0,0.3); display:flex; align-items:center; gap:14px; z-index:9999; font-weight:700; font-size:0.95rem; border: 2px solid #334155;";
+        toast.innerHTML = `<span>✨ ¡Nueva versión disponible!</span> <button id="btnReloadApp" style="background:#2563eb; color:white; border:none; padding:7px 14px; border-radius:9px; font-weight:800; cursor:pointer;">Actualizar</button>`;
+        document.body.appendChild(toast);
+        document.getElementById('btnReloadApp').addEventListener('click', () => {
+          navigator.serviceWorker.getRegistration().then((reg) => {
+            if (reg && reg.waiting) {
+              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            }
+          });
+        });
+      }
+      toast.style.display = 'flex';
     }
   </script>
 </body>
