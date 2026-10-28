@@ -1629,19 +1629,16 @@
       document.getElementById('btnModalCancel').innerText = t.cancel;
       document.getElementById('btnModalSave').innerText = t.save;
       
-      // Limpiar y resetear el input de borrado cada vez que se abre
       const confirmInput = document.getElementById('confirmDeleteInput');
       if (confirmInput) confirmInput.value = '';
 
-      // Textos fijos traducidos
       document.getElementById('dangerTitleText').innerText = t.dangerTitle;
       document.getElementById('dangerDescText').innerHTML = t.dangerText;
-      confirmInput.placeholder = t.inputPlaceholder;
+      if (confirmInput) confirmInput.placeholder = t.inputPlaceholder;
       document.getElementById('btnFinalDelete').innerText = t.holdButton;
 
       resetHoldDeleteButton();
 
-      // Renderizado de avatares con selección limpia
       const avatars = ['🦁', '🦖', '🦄', '🚀', '🐼', '⭐', '🐯', '🦊'];
       const avatarListContainer = document.getElementById('editAvatarList');
       avatarListContainer.innerHTML = '';
@@ -1667,7 +1664,6 @@
       document.getElementById('profileModal').style.display = 'flex';
     }
 
-    // Botón de guardar cambios corregido para actualizar nombre y avatar correctamente
     const btnModalSave = document.getElementById('btnModalSave');
     if (btnModalSave) {
       btnModalSave.onclick = () => {
@@ -1688,13 +1684,14 @@
       };
     }
 
-    // Input de confirmación corregido con evento nativo directo y robusto
+    // CORRECCIÓN DEFINITIVA: Listener de entrada independiente, limpio y robusto para el input
     const confirmInput = document.getElementById('confirmDeleteInput');
     if (confirmInput) {
-      confirmInput.addEventListener('input', (e) => {
+      confirmInput.addEventListener('input', function(e) {
         const lang = (typeof currentLang !== 'undefined' && profileModalTranslations[currentLang]) ? currentLang : 'es';
         const t = profileModalTranslations[lang];
         const holdCont = document.getElementById('holdDeleteBtnContainer');
+        
         if (e.target.value.trim().toUpperCase() === t.keyword) {
           holdCont.style.opacity = '1';
           holdCont.style.pointerEvents = 'auto';
@@ -1706,7 +1703,6 @@
       });
     }
 
-    // Funciones del temporizador de borrado con animación fluida de la barra roja
     function startHoldTimer(e) {
       e.preventDefault();
       holdStartTime = Date.now();
@@ -1789,14 +1785,14 @@
         const lang = (typeof currentLang !== 'undefined' && profileModalTranslations[currentLang]) ? currentLang : 'es';
         document.getElementById('modalTitle').innerText = profileModalTranslations[lang].zoneTitle || '⚠️ Zona de Borrado';
         
-        // Forzar el foco explícitamente para que se abra el teclado y permita escribir
         setTimeout(() => {
           const confirmInputElem = document.getElementById('confirmDeleteInput');
           if (confirmInputElem) {
             confirmInputElem.value = '';
             confirmInputElem.focus();
+            confirmInputElem.click();
           }
-        }, 50);
+        }, 100);
       };
     }
 
