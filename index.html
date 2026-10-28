@@ -50,16 +50,16 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 12px;
+      padding: 16px;
       overflow-x: hidden;
     }
 
     .app-container {
       width: 100%;
-      max-width: 460px;
+      max-width: 650px; /* Adaptado para ver cómodo en tablets y PC */
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     /* Cabecera */
@@ -68,19 +68,36 @@
       justify-content: space-between;
       align-items: center;
       background: var(--card);
-      padding: 10px 14px;
+      padding: 12px 16px;
       border-radius: 18px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border: 2px solid var(--border);
     }
 
-    .title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--primary);
+    .title-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile-pill {
       display: flex;
       align-items: center;
       gap: 6px;
+      background: #eff6ff;
+      border: 2px solid #bfdbfe;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary);
     }
 
     .header-badges {
@@ -89,11 +106,22 @@
       gap: 8px;
     }
 
+    .icon-btn {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 6px 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text);
+      cursor: pointer;
+    }
+
     .lang-select {
       background: #f8fafc;
       border: 2px solid var(--border);
       border-radius: 10px;
-      padding: 4px 8px;
+      padding: 5px 8px;
       font-weight: 700;
       font-size: 0.85rem;
       color: var(--text);
@@ -113,16 +141,16 @@
       font-size: 0.95rem;
     }
 
-    /* Tarjetas y Pantallas */
+    /* Pantallas */
     .screen {
       display: none;
       background: var(--card);
       border-radius: 22px;
-      padding: 18px;
+      padding: 20px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.06);
       border: 2px solid var(--border);
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
     }
 
     .screen.active {
@@ -152,7 +180,7 @@
       background: #f8fafc;
       border: 2px solid var(--border);
       border-radius: 14px;
-      padding: 10px 6px;
+      padding: 10px 8px;
       font-size: 0.95rem;
       font-weight: 700;
       color: var(--text);
@@ -180,12 +208,85 @@
       cursor: pointer;
       box-shadow: 0 5px 0 var(--green-dark);
       transition: transform 0.1s;
-      margin-top: 4px;
     }
 
     .start-btn:active {
       transform: translateY(4px);
       box-shadow: 0 1px 0 var(--green-dark);
+    }
+
+    /* Selección de Perfiles */
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      margin: 10px 0;
+    }
+
+    .profile-card {
+      background: #f8fafc;
+      border: 3px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .profile-card:hover {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .profile-avatar {
+      font-size: 2.8rem;
+    }
+
+    .profile-name {
+      font-weight: 800;
+      font-size: 1rem;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .new-profile-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #f8fafc;
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .input-name {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      outline: none;
+    }
+    .input-name:focus { border-color: var(--primary); }
+
+    .avatar-picker {
+      display: flex;
+      justify-content: space-around;
+      font-size: 1.8rem;
+      cursor: pointer;
+    }
+    .avatar-option {
+      padding: 4px;
+      border-radius: 8px;
+      transition: transform 0.1s;
+    }
+    .avatar-option.selected {
+      background: #bfdbfe;
+      transform: scale(1.15);
     }
 
     /* Juego */
@@ -235,7 +336,7 @@
       background-size: 28px 28px;
       border: 2px solid #cbd5e1;
       border-radius: 18px;
-      padding: 16px 20px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -244,14 +345,14 @@
 
     .math-grid {
       display: grid;
-      grid-template-columns: 40px repeat(4, 52px);
+      grid-template-columns: 40px repeat(4, 56px);
       align-items: center;
       justify-items: center;
-      gap: 4px;
+      gap: 6px;
     }
 
     .col-header {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 900;
       padding-bottom: 2px;
     }
@@ -260,8 +361,8 @@
     .col-u { color: var(--col-u); }
 
     .carry-circle {
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       border: 2px dashed #94a3b8;
       background: white;
@@ -281,14 +382,14 @@
     }
 
     .digit-cell {
-      font-size: 2.5rem;
+      font-size: 2.8rem;
       font-weight: 800;
       line-height: 1.1;
       color: var(--text);
     }
 
     .op-symbol {
-      font-size: 2.2rem;
+      font-size: 2.4rem;
       font-weight: 900;
       color: var(--primary);
     }
@@ -299,16 +400,16 @@
       height: 4px;
       background: var(--text);
       border-radius: 2px;
-      margin: 4px 0 8px 0;
+      margin: 6px 0 10px 0;
     }
 
     .ans-box {
-      width: 48px;
-      height: 56px;
+      width: 52px;
+      height: 60px;
       border: 3px solid #cbd5e1;
       border-radius: 12px;
       background: white;
-      font-size: 2.2rem;
+      font-size: 2.4rem;
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -337,25 +438,28 @@
     }
 
     .feedback-msg {
-      min-height: 24px;
+      min-height: 26px;
       font-weight: 800;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       text-align: center;
-      margin-top: 6px;
+      margin-top: 8px;
     }
 
-    /* Teclado */
+    /* Teclado Táctil adaptado a pantallas anchas */
     .keypad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      gap: 10px;
+      max-width: 400px;
+      margin: 0 auto;
+      width: 100%;
     }
 
     .key-btn {
       background: #f8fafc;
       border: 2px solid #cbd5e1;
       border-radius: 14px;
-      padding: 12px 0;
+      padding: 14px 0;
       font-size: 1.6rem;
       font-weight: 800;
       color: var(--text);
@@ -397,7 +501,7 @@
     .stars-row {
       display: flex;
       gap: 8px;
-      font-size: 2.8rem;
+      font-size: 3rem;
       margin: 4px 0;
     }
 
@@ -421,7 +525,7 @@
     }
 
     .review-list {
-      max-height: 200px;
+      max-height: 220px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -448,6 +552,60 @@
       border: 1px solid #fecaca;
       color: var(--red);
     }
+
+    /* Pantalla de Estadísticas / Historial */
+    .stats-tabs {
+      display: flex;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 12px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 8px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--muted);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .stats-summary-card {
+      background: #eff6ff;
+      border: 2px solid #bfdbfe;
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+    .stat-box-val {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--primary);
+    }
+    .stat-box-lbl {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ESTILOS PARA IMPRESIÓN A PDF */
+    @media print {
+      body { background: white; padding: 0; }
+      .header, .keypad, .start-btn, .back-btn, .stats-tabs, #screenSetup, #screenGame { display: none !important; }
+      #screenStats { display: flex !important; border: none; box-shadow: none; padding: 0; }
+      .app-container { max-width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -455,8 +613,14 @@
   <div class="app-container">
     <!-- Cabecera -->
     <div class="header">
-      <div class="title">✏️ <span data-i18n="appTitle">Mates 1.º</span></div>
+      <div class="title-area">
+        <div class="profile-pill" id="currentProfileBtn" title="Cambiar perfil">
+          <span id="headerAvatar">🦁</span> <span id="headerName">Perfil</span>
+        </div>
+        <div class="title">✏️ <span data-i18n="appTitle">Mates 1.º</span></div>
+      </div>
       <div class="header-badges">
+        <button class="icon-btn" id="btnOpenStats" title="Estadísticas">📊</button>
         <select class="lang-select" id="langSelect">
           <option value="es" selected>🇪🇸 ES</option>
           <option value="ca">🏴 CA</option>
@@ -468,8 +632,28 @@
       </div>
     </div>
 
+    <!-- PANTALLA 0: SELECCIÓN / CREACIÓN DE PERFILES -->
+    <div id="screenProfiles" class="screen">
+      <h2 style="font-size: 1.4rem; font-weight: 900; text-align: center;" data-i18n="profTitle">¿Quién va a jugar?</h2>
+      <div class="profiles-grid" id="profilesGrid"></div>
+
+      <div class="new-profile-box">
+        <div class="section-label" data-i18n="profNew">➕ Añadir nuevo perfil</div>
+        <input type="text" class="input-name" id="newProfileName" placeholder="Nombre del niño/a..." maxlength="12" />
+        <div class="avatar-picker" id="avatarPicker">
+          <span class="avatar-option selected" data-av="🦁">🦁</span>
+          <span class="avatar-option" data-av="🦖">🦖</span>
+          <span class="avatar-option" data-av="🦄">🦄</span>
+          <span class="avatar-option" data-av="🚀">🚀</span>
+          <span class="avatar-option" data-av="🐼">🐼</span>
+          <span class="avatar-option" data-av="⭐">⭐</span>
+        </div>
+        <button class="start-btn" id="btnAddProfile" data-i18n="profCreate">Crear Perfil 🚀</button>
+      </div>
+    </div>
+
     <!-- PANTALLA 1: CONFIGURACIÓN -->
-    <div id="screenSetup" class="screen active">
+    <div id="screenSetup" class="screen">
       <div>
         <div class="section-label" data-i18n="lblOp">1. Operación</div>
         <div class="grid-options" id="optType">
@@ -567,13 +751,52 @@
 
       <button class="start-btn" id="btnRestart" data-i18n="btnRestart">🔄 Jugar otra partida</button>
     </div>
+
+    <!-- PANTALLA 4: ESTADÍSTICAS E HISTÓRICO -->
+    <div id="screenStats" class="screen">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 1.3rem; font-weight: 900;" data-i18n="statsTitle">📊 Estadísticas de Progreso</h2>
+        <button class="back-btn" id="btnCloseStats" data-i18n="btnBack">⬅ Volver</button>
+      </div>
+
+      <div class="stats-tabs">
+        <button class="tab-btn active" data-period="week" data-i18n="tabWeek">Semanal</button>
+        <button class="tab-btn" data-period="month" data-i18n="tabMonth">Mensual</button>
+        <button class="tab-btn" data-period="year" data-i18n="tabYear">Anual / Histórico</button>
+      </div>
+
+      <div class="stats-summary-card">
+        <div>
+          <div class="stat-box-val" id="statTandas">0</div>
+          <div class="stat-box-lbl" data-i18n="lblTandas">Tandas</div>
+        </div>
+        <div>
+          <div class="stat-box-val" id="statAcc">0%</div>
+          <div class="stat-box-lbl" data-i18n="lblAcc">Aciertos</div>
+        </div>
+        <div>
+          <div class="stat-box-val" id="statStars">0</div>
+          <div class="stat-box-lbl" data-i18n="lblStars">Estrellas</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" data-i18n="lblHistoryLog">Registro detallado:</div>
+        <div class="review-list" id="statsLogList"></div>
+      </div>
+
+      <button class="start-btn" id="btnPrintPDF" style="background: var(--primary); box-shadow: 0 5px 0 var(--primary-dark);" data-i18n="btnPDF">🖨️ Guardar Informe PDF</button>
+    </div>
   </div>
 
   <script>
-    /* --- DICCIONARIO DE IDIOMAS (ES, CA, EN) --- */
+    /* --- TRADUCCIONES --- */
     const i18n = {
       es: {
         appTitle: "Mates 1.º",
+        profTitle: "¿Quién va a jugar?",
+        profNew: "➕ Añadir nuevo perfil",
+        profCreate: "Crear Perfil 🚀",
         lblOp: "1. Operación",
         optSum: "➕ Sumas",
         optSub: "➖ Restas",
@@ -603,10 +826,23 @@
         titleGood: "¡Buen trabajo! 👍",
         titleKeepGoing: "¡Sigue practicando! 💪",
         reviewOk: "✔ Bien",
-        reviewFail: "✖ Pusiste "
+        reviewFail: "✖ Pusiste ",
+        statsTitle: "📊 Estadísticas de Progreso",
+        btnBack: "⬅ Volver",
+        tabWeek: "Semanal",
+        tabMonth: "Mensual",
+        tabYear: "Anual / Histórico",
+        lblTandas: "Tandas",
+        lblAcc: "Aciertos",
+        lblStars: "Estrellas",
+        lblHistoryLog: "Registro detallado:",
+        btnPDF: "🖨️ Guardar Informe PDF"
       },
       ca: {
         appTitle: "Mate 1r",
+        profTitle: "Qui jugarà?",
+        profNew: "➕ Afegir nou perfil",
+        profCreate: "Crear Perfil 🚀",
         lblOp: "1. Operació",
         optSum: "➕ Sumes",
         optSub: "➖ Restes",
@@ -630,16 +866,29 @@
         btnRestart: "🔄 Jugar una altra partida",
         emptyPrompt: "👆 Escriu un número primer",
         msgCorrect: "Molt bé! Correcte! 🌟",
-        msgWrong: "quasi... Era ",
+        msgWrong: "Quasi... Era ",
         titlePerfect: "PLENARI PERFECTE! 🏆🌟",
         titleGreat: "Súper bé! 🎉",
-        titleGood: " Bona feina! 👍",
+        titleGood: "Bona feina! 👍",
         titleKeepGoing: "Continua practicant! 💪",
         reviewOk: "✔ Bé",
-        reviewFail: "✖ Has posat "
+        reviewFail: "✖ Has posat ",
+        statsTitle: "📊 Estadístiques de Progrés",
+        btnBack: "⬅ Enrere",
+        tabWeek: "Setmanal",
+        tabMonth: "Mensual",
+        tabYear: "Anual / Històric",
+        lblTandas: "Tandes",
+        lblAcc: "Encerts",
+        lblStars: "Estrelles",
+        lblHistoryLog: "Registre detallat:",
+        btnPDF: "🖨️ Desar Informe PDF"
       },
       en: {
         appTitle: "Math 1st",
+        profTitle: "Who is playing?",
+        profNew: "➕ Add new profile",
+        profCreate: "Create Profile 🚀",
         lblOp: "1. Operation",
         optSum: "➕ Addition",
         optSub: "➖ Subtraction",
@@ -669,30 +918,200 @@
         titleGood: "Good work! 👍",
         titleKeepGoing: "Keep practicing! 💪",
         reviewOk: "✔ Correct",
-        reviewFail: "✖ You put "
+        reviewFail: "✖ You put ",
+        statsTitle: "📊 Progress Statistics",
+        btnBack: "⬅ Back",
+        tabWeek: "Weekly",
+        tabMonth: "Monthly",
+        tabYear: "Yearly / History",
+        lblTandas: "Sessions",
+        lblAcc: "Accuracy",
+        lblStars: "Stars",
+        lblHistoryLog: "Detailed log:",
+        btnPDF: "🖨️ Save PDF Report"
       }
     };
 
     let currentLang = 'es';
-
     function setLanguage(lang) {
       currentLang = lang;
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (i18n[lang][key]) {
-          el.textContent = i18n[lang][key];
-        }
+        if (i18n[lang][key]) el.textContent = i18n[lang][key];
       });
     }
+    document.getElementById('langSelect').addEventListener('change', (e) => setLanguage(e.target.value));
 
-    document.getElementById('langSelect').addEventListener('change', (e) => {
-      setLanguage(e.target.value);
+    /* --- GESTIÓN DE PERFILES Y ALMACENAMIENTO AISLADO --- */
+    let currentProfileId = localStorage.getItem('active_profile_id') || null;
+
+    function getProfiles() {
+      return JSON.parse(localStorage.getItem('math_profiles') || '[]');
+    }
+
+    function saveProfiles(profiles) {
+      localStorage.setItem('math_profiles', JSON.stringify(profiles));
+    }
+
+    function getCurrentProfile() {
+      const profiles = getProfiles();
+      return profiles.find(p => p.id === currentProfileId) || null;
+    }
+
+    function renderProfilesScreen() {
+      const profiles = getProfiles();
+      const grid = document.getElementById('profilesGrid');
+      grid.innerHTML = '';
+
+      if (profiles.length === 0) {
+        // Crear perfil por defecto si no hay ninguno
+        const defaultProfile = { id: 'prof_' + Date.now(), name: 'Nil', avatar: '🦁', history: [], compressedMonths: {} };
+        saveProfiles([defaultProfile]);
+        currentProfileId = defaultProfile.id;
+        localStorage.setItem('active_profile_id', currentProfileId);
+        loadProfileData();
+        return;
+      }
+
+      profiles.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'profile-card';
+        card.innerHTML = `<div class="profile-avatar">${p.avatar}</div><div class="profile-name">${p.name}</div>`;
+        card.addEventListener('click', () => {
+          currentProfileId = p.id;
+          localStorage.setItem('active_profile_id', currentProfileId);
+          loadProfileData();
+          switchScreen('screenSetup');
+        });
+        grid.appendChild(card);
+      });
+
+      if (!currentProfileId && profiles.length > 0) {
+        currentProfileId = profiles[0].id;
+        localStorage.setItem('active_profile_id', currentProfileId);
+      }
+      loadProfileData();
+    }
+
+    function loadProfileData() {
+      const p = getCurrentProfile();
+      if (!p) return;
+      document.getElementById('headerAvatar').textContent = p.avatar;
+      document.getElementById('headerName').textContent = p.name;
+      loadDailyStars();
+    }
+
+    // Selector de avatar al crear perfil
+    let selectedAvatar = '🦁';
+    document.querySelectorAll('.avatar-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        selectedAvatar = opt.getAttribute('data-av');
+      });
     });
 
-    /* --- AUDIO --- */
+    document.getElementById('btnAddProfile').addEventListener('click', () => {
+      const nameInput = document.getElementById('newProfileName');
+      const name = nameInput.value.trim();
+      if (!name) return;
+
+      const profiles = getProfiles();
+      const newProf = { id: 'prof_' + Date.now(), name, avatar: selectedAvatar, history: [], compressedMonths: {} };
+      profiles.push(newProf);
+      saveProfiles(profiles);
+
+      currentProfileId = newProf.id;
+      localStorage.setItem('active_profile_id', currentProfileId);
+      nameInput.value = '';
+      renderProfilesScreen();
+      switchScreen('screenSetup');
+    });
+
+    document.getElementById('currentProfileBtn').addEventListener('click', () => {
+      renderProfilesScreen();
+      switchScreen('screenProfiles');
+    });
+
+    /* --- MOTOR PREVENTIVO: HISTORIAL Y COMPRESIÓN MENSUAL --- */
+    function recordSessionStats(correctCount, total, stars) {
+      const profiles = getProfiles();
+      const p = profiles.find(pr => pr.id === currentProfileId);
+      if (!p) return;
+
+      if (!p.history) p.history = [];
+      if (!p.compressedMonths) p.compressedMonths = {};
+
+      const now = new Date();
+      const sessionRecord = {
+        date: now.getTime(),
+        dateStr: now.toLocaleDateString(),
+        correct: correctCount,
+        total: total,
+        stars: stars
+      };
+
+      p.history.push(sessionRecord);
+
+      // Limpieza preventiva: Comprimir sesiones de hace más de 90 días en resúmenes mensuales
+      const cutoffTime = now.getTime() - (90 * 24 * 60 * 60 * 1000);
+      const recentHistory = [];
+
+      p.history.forEach(item => {
+        if (item.date < cutoffTime) {
+          const d = new Date(item.date);
+          const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+          if (!p.compressedMonths[monthKey]) {
+            p.compressedMonths[monthKey] = { tandas: 0, correct: 0, total: 0, stars: 0 };
+          }
+          p.compressedMonths[monthKey].tandas += 1;
+          p.compressedMonths[monthKey].correct += item.correct;
+          p.compressedMonths[monthKey].total += item.total;
+          p.compressedMonths[monthKey].stars += item.stars;
+        } else {
+          recentHistory.push(item);
+        }
+      });
+
+      p.history = recentHistory;
+      saveProfiles(profiles);
+    }
+
+    function getFilteredStats(period) {
+      const p = getCurrentProfile();
+      if (!p) return { tandas: 0, accuracy: 0, stars: 0, logs: [] };
+
+      const now = Date.now();
+      let limitTime = 0;
+      if (period === 'week') limitTime = now - (7 * 24 * 60 * 60 * 1000);
+      else if (period === 'month') limitTime = now - (30 * 24 * 60 * 60 * 1000);
+      else limitTime = 0; // Histórico completo
+
+      let totalTandas = 0;
+      let totalCorrect = 0;
+      let totalQuestions = 0;
+      let totalStars = 0;
+      let logs = [];
+
+      if (p.history) {
+        p.history.forEach(item => {
+          if (item.date >= limitTime || period === 'year') {
+            totalTandas++;
+            totalCorrect += item.correct;
+            totalQuestions += item.total;
+            totalStars += item.stars;
+            logs.unshift(item);
+          }
+        });
+      }
+
+      const accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+      return { tandas: totalTandas, accuracy, stars: totalStars, logs };
+    }
+
+    /* --- AUDIO SINTETIZADO --- */
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
-
     function playTone(freq, type, duration, delay = 0) {
       try {
         if (!audioCtx) audioCtx = new AudioCtx();
@@ -709,22 +1128,11 @@
         osc.stop(audioCtx.currentTime + delay + duration);
       } catch (e) {}
     }
+    function soundSuccess() { playTone(523.25, 'sine', 0.12, 0); playTone(659.25, 'sine', 0.18, 0.1); }
+    function soundError() { playTone(220, 'triangle', 0.2, 0); playTone(180, 'triangle', 0.25, 0.15); }
+    function soundFanfare() { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => playTone(f, 'sine', 0.22, i * 0.12)); }
 
-    function soundSuccess() {
-      playTone(523.25, 'sine', 0.12, 0);
-      playTone(659.25, 'sine', 0.18, 0.1);
-    }
-
-    function soundError() {
-      playTone(220, 'triangle', 0.2, 0);
-      playTone(180, 'triangle', 0.25, 0.15);
-    }
-
-    function soundFanfare() {
-      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => playTone(f, 'sine', 0.22, i * 0.12));
-    }
-
-    /* --- ESTADO --- */
+    /* --- ESTADO DEL JUEGO --- */
     const config = { type: 'sum', digits: 1, carry: 'no', count: 10, mode: 'instant' };
     let questions = [];
     let currentIndex = 0;
@@ -735,14 +1143,13 @@
 
     function getTodayKey() {
       const d = new Date();
-      return `stars_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;
+      return `stars_${currentProfileId}_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;
     }
-
     function loadDailyStars() {
+      if (!currentProfileId) return;
       const saved = parseInt(localStorage.getItem(getTodayKey()) || '0', 10);
       document.getElementById('dailyStars').textContent = saved;
     }
-
     function addDailyStars(amount) {
       const key = getTodayKey();
       const current = parseInt(localStorage.getItem(key) || '0', 10);
@@ -751,8 +1158,7 @@
       document.getElementById('dailyStars').textContent = updated;
     }
 
-    loadDailyStars();
-
+    /* --- CONFIGURADOR DE OPCIONES --- */
     function setupOptionGroup(groupId, configKey, isNumber = false) {
       const container = document.getElementById(groupId);
       const buttons = container.querySelectorAll('.opt-btn');
@@ -765,38 +1171,29 @@
         });
       });
     }
-
     setupOptionGroup('optType', 'type');
     setupOptionGroup('optDigits', 'digits', true);
     setupOptionGroup('optCarry', 'carry');
     setupOptionGroup('optCount', 'count', true);
     setupOptionGroup('optMode', 'mode');
 
-    function randInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+    /* --- GENERADOR DE MATEMÁTICAS --- */
+    function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
     function generateSingleQuestion(opType, digits, carryMode) {
       const actualOp = opType === 'mix' ? (Math.random() < 0.5 ? 'sum' : 'sub') : opType;
       let aDigits = [], bDigits = [];
-
       if (carryMode === 'no') {
         for (let i = 0; i < digits; i++) {
           const isMostSig = (i === 0 && digits > 1);
           if (actualOp === 'sum') {
-            const minA = isMostSig ? 1 : 0;
-            const minB = isMostSig ? 1 : 0;
-            const dA = randInt(minA, 8);
-            const dB = randInt(minB, 9 - dA);
-            aDigits.push(dA);
-            bDigits.push(dB);
+            const dA = randInt(isMostSig ? 1 : 0, 8);
+            const dB = randInt(isMostSig ? 1 : 0, 9 - dA);
+            aDigits.push(dA); bDigits.push(dB);
           } else {
-            const minA = isMostSig ? 2 : 1;
-            const minB = isMostSig ? 1 : 0;
-            const dA = randInt(minA, 9);
-            const dB = randInt(minB, dA);
-            aDigits.push(dA);
-            bDigits.push(dB);
+            const dA = randInt(isMostSig ? 2 : 1, 9);
+            const dB = randInt(isMostSig ? 1 : 0, dA);
+            aDigits.push(dA); bDigits.push(dB);
           }
         }
         const a = parseInt(aDigits.join(''), 10);
@@ -806,15 +1203,13 @@
         const minVal = digits === 1 ? 2 : Math.pow(10, digits - 1);
         const maxVal = Math.pow(10, digits) - 1;
         for (let attempt = 0; attempt < 100; attempt++) {
-          let a = randInt(minVal, maxVal);
-          let b = randInt(minVal, maxVal);
+          let a = randInt(minVal, maxVal), b = randInt(minVal, maxVal);
           if (actualOp === 'sub' && a < b) { const tmp = a; a = b; b = tmp; }
           const strA = String(a).padStart(digits, '0');
           const strB = String(b).padStart(digits, '0');
           let hasCarry = false;
           for (let i = digits - 1; i >= 0; i--) {
-            const da = parseInt(strA[i], 10);
-            const db = parseInt(strB[i], 10);
+            const da = parseInt(strA[i], 10), db = parseInt(strB[i], 10);
             if (actualOp === 'sum' && (da + db >= 10)) hasCarry = true;
             if (actualOp === 'sub' && (da < db)) hasCarry = true;
           }
@@ -840,9 +1235,7 @@
       return list;
     }
 
-    function getRequiredBoxes(q) {
-      return Math.max(config.digits, String(q.ans).length);
-    }
+    function getRequiredBoxes(q) { return Math.max(config.digits, String(q.ans).length); }
 
     function renderCurrentQuestion() {
       locked = false;
@@ -855,8 +1248,7 @@
       document.getElementById('counterText').textContent = `${currentIndex + 1} / ${config.count}`;
       document.getElementById('progressBar').style.width = `${(currentIndex / config.count) * 100}%`;
       const fb = document.getElementById('feedbackMsg');
-      fb.textContent = '';
-      fb.style.color = '';
+      fb.textContent = ''; fb.style.color = '';
 
       const grid = document.getElementById('mathGrid');
       grid.innerHTML = '';
@@ -953,9 +1345,8 @@
       const q = questions[currentIndex];
       const numBoxes = getRequiredBoxes(q);
       const firstBoxCol = 4 - numBoxes;
-
       userDigits[activeCol] = digitStr;
-      if (activeCol > firstBoxCol) { activeCol--; }
+      if (activeCol > firstBoxCol) activeCol--;
       updateBoxesUI();
     }
 
@@ -964,13 +1355,8 @@
       const q = questions[currentIndex];
       const numBoxes = getRequiredBoxes(q);
       const firstBoxCol = 4 - numBoxes;
-
-      if (userDigits[activeCol] !== '') {
-        userDigits[activeCol] = '';
-      } else if (activeCol < 3) {
-        activeCol++;
-        userDigits[activeCol] = '';
-      }
+      if (userDigits[activeCol] !== '') userDigits[activeCol] = '';
+      else if (activeCol < 3) { activeCol++; userDigits[activeCol] = ''; }
       updateBoxesUI();
     }
 
@@ -979,7 +1365,6 @@
       const q = questions[currentIndex];
       const numBoxes = getRequiredBoxes(q);
       const firstBoxCol = 4 - numBoxes;
-
       const rawStr = userDigits.slice(firstBoxCol, 4).join('').trim();
       if (rawStr === '') {
         const fb = document.getElementById('feedbackMsg');
@@ -987,7 +1372,6 @@
         fb.textContent = i18n[currentLang].emptyPrompt;
         return;
       }
-
       const userVal = parseInt(rawStr, 10);
       const isRight = (userVal === q.ans);
       q.userAns = userVal;
@@ -998,21 +1382,11 @@
         const fb = document.getElementById('feedbackMsg');
         for (let c = firstBoxCol; c < 4; c++) {
           const box = document.getElementById(`ansBox_${c}`);
-          if (box) {
-            box.classList.remove('focused');
-            box.classList.add(isRight ? 'correct' : 'wrong');
-          }
+          if (box) { box.classList.remove('focused'); box.classList.add(isRight ? 'correct' : 'wrong'); }
         }
-        if (isRight) {
-          soundSuccess();
-          fb.style.color = 'var(--green)';
-          fb.textContent = i18n[currentLang].msgCorrect;
-        } else {
-          soundError();
-          fb.style.color = 'var(--red)';
-          fb.textContent = i18n[currentLang].msgWrong + q.ans;
-        }
-        setTimeout(() => { nextOrFinish(); }, 1250);
+        if (isRight) { soundSuccess(); fb.style.color = 'var(--green)'; fb.textContent = i18n[currentLang].msgCorrect; }
+        else { soundError(); fb.style.color = 'var(--red)'; fb.textContent = i18n[currentLang].msgWrong + q.ans; }
+        setTimeout(() => nextOrFinish(), 1250);
       } else {
         playTone(440, 'sine', 0.08);
         nextOrFinish();
@@ -1021,8 +1395,8 @@
 
     function nextOrFinish() {
       currentIndex++;
-      if (currentIndex < questions.length) { renderCurrentQuestion(); }
-      else { showResultsScreen(); }
+      if (currentIndex < questions.length) renderCurrentQuestion();
+      else showResultsScreen();
     }
 
     function showResultsScreen() {
@@ -1038,6 +1412,7 @@
       else if (ratio >= 0.5) { starsEarned = 2; titleText = i18n[currentLang].titleGood; }
 
       addDailyStars(starsEarned);
+      recordSessionStats(correctCount, total, starsEarned);
       soundFanfare();
 
       document.getElementById('resTitle').textContent = titleText;
@@ -1046,7 +1421,7 @@
       const starIcons = document.querySelectorAll('#starsRow .star-icon');
       starIcons.forEach((st, idx) => {
         st.classList.remove('earned');
-        if (idx < starsEarned) { setTimeout(() => st.classList.add('earned'), idx * 180); }
+        if (idx < starsEarned) setTimeout(() => st.classList.add('earned'), idx * 180);
       });
 
       const revList = document.getElementById('reviewList');
@@ -1064,6 +1439,48 @@
       });
     }
 
+    /* --- PANTALLA DE ESTADÍSTICAS E INFORMES --- */
+    let currentStatsPeriod = 'week';
+
+    function renderStatsScreen() {
+      switchScreen('screenStats');
+      const data = getFilteredStats(currentStatsPeriod);
+      document.getElementById('statTandas').textContent = data.tandas;
+      document.getElementById('statAcc').textContent = data.accuracy + '%';
+      document.getElementById('statStars').textContent = data.stars;
+
+      const logList = document.getElementById('statsLogList');
+      logList.innerHTML = '';
+      if (data.logs.length === 0) {
+        logList.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--muted);">Sin registros en este periodo</div>`;
+        return;
+      }
+
+      data.logs.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'review-item ok';
+        row.innerHTML = `<span>📅 ${item.dateStr}</span> <span>⭐ ${item.stars} | 🎯 ${item.correct}/${item.total}</span>`;
+        logList.appendChild(row);
+      });
+    }
+
+    document.getElementById('btnOpenStats').addEventListener('click', renderStatsScreen);
+    document.getElementById('btnCloseStats').addEventListener('click', () => switchScreen('screenSetup'));
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentStatsPeriod = btn.getAttribute('data-period');
+        renderStatsScreen();
+      });
+    });
+
+    document.getElementById('btnPrintPDF').addEventListener('click', () => {
+      window.print();
+    });
+
+    /* --- NAVEGACIÓN --- */
     function switchScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
@@ -1095,6 +1512,18 @@
       else if (e.key === 'Enter') submitCurrentAnswer();
       else if (e.key === 'ArrowLeft' && activeCol > 0) { activeCol--; updateBoxesUI(); }
       else if (e.key === 'ArrowRight' && activeCol < 3) { activeCol++; updateBoxesUI(); }
+    });
+
+    /* Inicialización al cargar */
+    window.addEventListener('load', () => {
+      const profiles = getProfiles();
+      if (profiles.length === 0 || !currentProfileId) {
+        renderProfilesScreen();
+        switchScreen('screenProfiles');
+      } else {
+        loadProfileData();
+        switchScreen('screenSetup');
+      }
     });
 
     if ('serviceWorker' in navigator) {
