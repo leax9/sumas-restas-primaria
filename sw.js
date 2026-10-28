@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mates-primaria-v7'; // Versión actualizada con gestión segura de perfiles
+const CACHE_NAME = 'mates-primaria-v8'; // Subido a v8 con los botones de gestión y borrado seguro de perfiles
 const ASSETS = [
   './',
   './index.html',
