@@ -56,7 +56,7 @@
 
     .app-container {
       width: 100%;
-      max-width: 650px; /* Adaptado para ver cómodo en tablets y PC */
+      max-width: 650px;
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -445,7 +445,7 @@
       margin-top: 8px;
     }
 
-    /* Teclado Táctil adaptado a pantallas anchas */
+    /* Teclado Táctil */
     .keypad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -553,7 +553,7 @@
       color: var(--red);
     }
 
-    /* Pantalla de Estadísticas / Historial */
+    /* Estadísticas */
     .stats-tabs {
       display: flex;
       gap: 6px;
@@ -599,7 +599,6 @@
       text-transform: uppercase;
     }
 
-    /* ESTILOS PARA IMPRESIÓN A PDF */
     @media print {
       body { background: white; padding: 0; }
       .header, .keypad, .start-btn, .back-btn, .stats-tabs, #screenSetup, #screenGame { display: none !important; }
@@ -639,7 +638,7 @@
 
       <div class="new-profile-box">
         <div class="section-label" data-i18n="profNew">➕ Añadir nuevo perfil</div>
-        <input type="text" class="input-name" id="newProfileName" placeholder="Nombre del niño/a..." maxlength="12" />
+        <input type="text" class="input-name" id="newProfileName" data-i18n-placeholder="profPlaceholder" placeholder="Nombre del niño/a..." maxlength="12" />
         <div class="avatar-picker" id="avatarPicker">
           <span class="avatar-option selected" data-av="🦁">🦁</span>
           <span class="avatar-option" data-av="🦖">🦖</span>
@@ -752,7 +751,7 @@
       <button class="start-btn" id="btnRestart" data-i18n="btnRestart">🔄 Jugar otra partida</button>
     </div>
 
-    <!-- PANTALLA 4: ESTADÍSTICAS E HISTÓRICO -->
+    <!-- PANTALLA 4: ESTADÍSTICAS -->
     <div id="screenStats" class="screen">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h2 style="font-size: 1.3rem; font-weight: 900;" data-i18n="statsTitle">📊 Estadísticas de Progreso</h2>
@@ -790,12 +789,13 @@
   </div>
 
   <script>
-    /* --- TRADUCCIONES --- */
+    /* --- TRADUCCIONES CORREGIDAS --- */
     const i18n = {
       es: {
         appTitle: "Mates 1.º",
         profTitle: "¿Quién va a jugar?",
         profNew: "➕ Añadir nuevo perfil",
+        profPlaceholder: "Nombre del niño/a...",
         profCreate: "Crear Perfil 🚀",
         lblOp: "1. Operación",
         optSum: "➕ Sumas",
@@ -839,9 +839,10 @@
         btnPDF: "🖨️ Guardar Informe PDF"
       },
       ca: {
-        appTitle: "Mate 1r",
+        appTitle: "Mates 1r",
         profTitle: "Qui jugarà?",
         profNew: "➕ Afegir nou perfil",
+        profPlaceholder: "Nom del nen/a...",
         profCreate: "Crear Perfil 🚀",
         lblOp: "1. Operació",
         optSum: "➕ Sumes",
@@ -888,6 +889,7 @@
         appTitle: "Math 1st",
         profTitle: "Who is playing?",
         profNew: "➕ Add new profile",
+        profPlaceholder: "Child's name...",
         profCreate: "Create Profile 🚀",
         lblOp: "1. Operation",
         optSum: "➕ Addition",
@@ -939,6 +941,11 @@
         const key = el.getAttribute('data-i18n');
         if (i18n[lang][key]) el.textContent = i18n[lang][key];
       });
+      // Traducir también los placeholders de los inputs
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (i18n[lang][key]) el.placeholder = i18n[lang][key];
+      });
     }
     document.getElementById('langSelect').addEventListener('change', (e) => setLanguage(e.target.value));
 
@@ -964,7 +971,6 @@
       grid.innerHTML = '';
 
       if (profiles.length === 0) {
-        // Crear perfil por defecto si no hay ninguno
         const defaultProfile = { id: 'prof_' + Date.now(), name: 'Nil', avatar: '🦁', history: [], compressedMonths: {} };
         saveProfiles([defaultProfile]);
         currentProfileId = defaultProfile.id;
@@ -1001,7 +1007,6 @@
       loadDailyStars();
     }
 
-    // Selector de avatar al crear perfil
     let selectedAvatar = '🦁';
     document.querySelectorAll('.avatar-option').forEach(opt => {
       opt.addEventListener('click', () => {
@@ -1053,7 +1058,6 @@
 
       p.history.push(sessionRecord);
 
-      // Limpieza preventiva: Comprimir sesiones de hace más de 90 días en resúmenes mensuales
       const cutoffTime = now.getTime() - (90 * 24 * 60 * 60 * 1000);
       const recentHistory = [];
 
@@ -1085,12 +1089,9 @@
       let limitTime = 0;
       if (period === 'week') limitTime = now - (7 * 24 * 60 * 60 * 1000);
       else if (period === 'month') limitTime = now - (30 * 24 * 60 * 60 * 1000);
-      else limitTime = 0; // Histórico completo
+      else limitTime = 0;
 
-      let totalTandas = 0;
-      let totalCorrect = 0;
-      let totalQuestions = 0;
-      let totalStars = 0;
+      let totalTandas = 0, totalCorrect = 0, totalQuestions = 0, totalStars = 0;
       let logs = [];
 
       if (p.history) {
@@ -1439,7 +1440,7 @@
       });
     }
 
-    /* --- PANTALLA DE ESTADÍSTICAS E INFORMES --- */
+    /* --- ESTADÍSTICAS --- */
     let currentStatsPeriod = 'week';
 
     function renderStatsScreen() {
@@ -1476,11 +1477,8 @@
       });
     });
 
-    document.getElementById('btnPrintPDF').addEventListener('click', () => {
-      window.print();
-    });
+    document.getElementById('btnPrintPDF').addEventListener('click', () => window.print());
 
-    /* --- NAVEGACIÓN --- */
     function switchScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
@@ -1514,7 +1512,6 @@
       else if (e.key === 'ArrowRight' && activeCol < 3) { activeCol++; updateBoxesUI(); }
     });
 
-    /* Inicialización al cargar */
     window.addEventListener('load', () => {
       const profiles = getProfiles();
       if (profiles.length === 0 || !currentProfileId) {
