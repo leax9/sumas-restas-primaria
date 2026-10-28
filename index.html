@@ -68,7 +68,7 @@
       justify-content: space-between;
       align-items: center;
       background: var(--card);
-      padding: 12px 16px;
+      padding: 12px 14px;
       border-radius: 18px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border: 2px solid var(--border);
@@ -77,42 +77,46 @@
     .title-area {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      min-width: 0; /* Evita que desborde en flexbox */
     }
 
     .profile-pill {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       background: #eff6ff;
       border: 2px solid #bfdbfe;
-      padding: 4px 10px;
+      padding: 4px 8px;
       border-radius: 99px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 800;
       color: var(--primary);
       cursor: pointer;
+      flex-shrink: 0;
     }
 
     .title {
-      font-size: 1.2rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: var(--primary);
+      white-space: nowrap; /* Impide que el texto salte a otra línea */
     }
 
     .header-badges {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      flex-shrink: 0;
     }
 
     .icon-btn {
       background: #f8fafc;
       border: 2px solid var(--border);
       border-radius: 12px;
-      padding: 6px 10px;
+      padding: 6px 8px;
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text);
       cursor: pointer;
     }
@@ -121,9 +125,9 @@
       background: #f8fafc;
       border: 2px solid var(--border);
       border-radius: 10px;
-      padding: 5px 8px;
+      padding: 4px 6px;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text);
       cursor: pointer;
     }
@@ -133,12 +137,12 @@
       border: 2px solid #fcd34d;
       color: #b45309;
       font-weight: 800;
-      padding: 5px 10px;
+      padding: 4px 8px;
       border-radius: 999px;
       display: flex;
       align-items: center;
-      gap: 4px;
-      font-size: 0.95rem;
+      gap: 3px;
+      font-size: 0.85rem;
     }
 
     /* Pantallas */
@@ -667,7 +671,7 @@
           </div>
         </div>
     
-        <!-- Sección de Borrado Seguro (Fija en el HTML para total funcionalidad del input) -->
+        <!-- Sección de Borrado Seguro -->
         <div id="deleteSecureSection" style="display: none; flex-direction: column; gap: 12px; background: #fef2f2; border: 2px solid #fecaca; padding: 14px; border-radius: 12px;">
           <span id="dangerTitleText" style="color: #991b1b; font-weight: 800; font-size: 0.9rem;">⚠️ Zona de Peligro: Borrado Permanente</span>
           <p id="dangerDescText" style="margin:0; font-size: 0.85rem; color: #7f1d1d;">Para evitar borrados accidentales por niños, escribe la palabra clave:</p>
@@ -1038,16 +1042,17 @@
         localStorage.setItem('active_profile_id', currentProfileId);
       }
       
-      if (profiles.length === 0) {
-        switchScreen('screenProfiles');
-      } else {
-        loadProfileData();
-      }
+      loadProfileData();
     }
 
     function loadProfileData() {
       const p = getCurrentProfile();
-      if (!p) return;
+      if (!p) {
+        document.getElementById('headerAvatar').textContent = '🦁';
+        document.getElementById('headerName').textContent = 'Perfil';
+        document.getElementById('dailyStars').textContent = '0';
+        return;
+      }
       document.getElementById('headerAvatar').textContent = p.avatar;
       document.getElementById('headerName').textContent = p.name;
       loadDailyStars();
@@ -1537,7 +1542,10 @@
       renderCurrentQuestion();
     });
 
-    document.getElementById('btnQuit').addEventListener('click', () => switchScreen('screenSetup'));
+    document.getElementById('btnQuit').addEventListener('click', () => {
+      renderProfilesScreen();
+      switchScreen('screenProfiles');
+    });
     document.getElementById('btnRestart').addEventListener('click', () => switchScreen('screenSetup'));
 
     document.querySelectorAll('.key-btn').forEach(btn => {
@@ -1559,14 +1567,8 @@
     });
 
     window.addEventListener('load', () => {
-      const profiles = getProfiles();
-      if (profiles.length === 0 || !currentProfileId) {
-        renderProfilesScreen();
-        switchScreen('screenProfiles');
-      } else {
-        loadProfileData();
-        switchScreen('screenSetup');
-      }
+      renderProfilesScreen();
+      switchScreen('screenProfiles');
     });
     
     let profileToEditId = null;
