@@ -1005,14 +1005,12 @@
       return profiles.find(p => p.id === currentProfileId) || null;
     }
 
-    function renderProfilesScreen() {
+   function renderProfilesScreen() {
       const profiles = getProfiles();
       const grid = document.getElementById('profilesGrid');
       grid.innerHTML = '';
 
       if (profiles.length === 0) {
-        // Ya no creamos ningún perfil por defecto ("Nil"). 
-        // La pantalla de selección aparecerá limpia esperando a que el usuario cree el suyo.
         currentProfileId = null;
         localStorage.removeItem('active_profile_id');
       }
@@ -1020,13 +1018,23 @@
       profiles.forEach(p => {
         const card = document.createElement('div');
         card.className = 'profile-card';
-        card.innerHTML = `<div class="profile-avatar">${p.avatar}</div><div class="profile-name">${p.name}</div>`;
+        card.style.position = 'relative'; // Necesario para posicionar el botón de editar
+        
+        // Añadimos el avatar, el nombre y un discreto botón de ajustes (⚙️) en la esquina superior
+        card.innerHTML = `
+          <button class="btn-edit-profile" onclick="event.stopPropagation(); openProfileModal('${p.id}');" style="position: absolute; top: 8px; right: 8px; background: #f1f5f9; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem;" title="Editar o eliminar perfil">⚙️</button>
+          <div class="profile-avatar">${p.avatar}</div>
+          <div class="profile-name">${p.name}</div>
+        `;
+
+        // Al hacer clic en la tarjeta (fuera del engranaje), se selecciona el perfil y se entra a jugar
         card.addEventListener('click', () => {
           currentProfileId = p.id;
           localStorage.setItem('active_profile_id', currentProfileId);
           loadProfileData();
           switchScreen('screenSetup');
         });
+
         grid.appendChild(card);
       });
 
@@ -1035,7 +1043,6 @@
         localStorage.setItem('active_profile_id', currentProfileId);
       }
       
-      // Si no hay perfiles, abrimos directamente la pantalla para que creen el primero
       if (profiles.length === 0) {
         switchScreen('screenProfiles');
       } else {
