@@ -2,7 +2,7 @@
 
 Aplicación Web Progresiva (PWA) diseñada específicamente para que los niños de primaria practiquen operaciones matemáticas de forma ágil, segura, visual y completamente libre de publicidad o interrupciones.
 
-🔗 **[Probar aplicación en directo](https://alejandrosales.github.io/mates-primaria/)** *(o sustituye esta URL por la dirección exacta de tu despliegue en GitHub Pages)*
+🔗 **[Probar aplicación](https://leax9.github.io/sumas-restas-primaria/)**
 
 ![PWA Ready](https://img.shields.io/badge/PWA-Ready-blue?style=flat-square)
 ![Offline First](https://img.shields.io/badge/Offline-100%25-green?style=flat-square)
