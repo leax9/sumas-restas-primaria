@@ -662,15 +662,22 @@
           <input type="text" id="editProfileName" class="profile-input" style="padding: 10px; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 1rem; width: 100%; box-sizing: border-box;">
           
           <label style="font-size: 0.9rem; font-weight: 700;">Avatar:</label>
-          <!-- Contenedor con flex-wrap para que no sobresalgan los avatares -->
           <div id="editAvatarList" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: 1.8rem; cursor: pointer; padding: 4px;">
             <!-- Se rellena por JS -->
           </div>
         </div>
     
-        <!-- Sección de Borrado Seguro -->
+        <!-- Sección de Borrado Seguro (Fija en el HTML para total funcionalidad del input) -->
         <div id="deleteSecureSection" style="display: none; flex-direction: column; gap: 12px; background: #fef2f2; border: 2px solid #fecaca; padding: 14px; border-radius: 12px;">
-          <!-- Se genera dinámicamente por JS según el idioma -->
+          <span id="dangerTitleText" style="color: #991b1b; font-weight: 800; font-size: 0.9rem;">⚠️ Zona de Peligro: Borrado Permanente</span>
+          <p id="dangerDescText" style="margin:0; font-size: 0.85rem; color: #7f1d1d;">Para evitar borrados accidentales por niños, escribe la palabra clave:</p>
+          <input type="text" id="confirmDeleteInput" autocomplete="off" placeholder="ELIMINAR" style="padding: 8px; border-radius: 8px; border: 2px solid #f87171; text-align: center; font-weight: 800; width: 100%; box-sizing: border-box; background: #fff;">
+          <div id="holdDeleteBtnContainer" style="position: relative; overflow: hidden; border-radius: 10px; opacity: 0.5; pointer-events: none; transition: opacity 0.3s; background: #fee2e2; border: 2px solid #f87171;">
+            <div id="holdProgressBar" style="position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: #ef4444; z-index: 1;"></div>
+            <button id="btnFinalDelete" style="position: relative; z-index: 2; width: 100%; background: transparent; color: #991b1b; border: none; padding: 12px; font-weight: 900; cursor: pointer; text-align: center;">
+              Mantén pulsado 2s para borrar 🛑
+            </button>
+          </div>
         </div>
     
         <!-- Botones de Acción de la Modal -->
@@ -820,7 +827,7 @@
   </div>
 
   <script>
-    /* --- TRADUCCIONES CORREGIDAS --- */
+    /* --- TRADUCCIONES TRILINGÜES --- */
     const i18n = {
       es: {
         appTitle: "Mates 1.º",
@@ -1620,38 +1627,11 @@
       document.getElementById('btnModalCancel').innerText = t.cancel;
       document.getElementById('btnModalSave').innerText = t.save;
       
-      // Construir sección de peligro con barra de progreso estilizada y visible
-      const dangerBox = document.getElementById('deleteSecureSection');
-      dangerBox.innerHTML = `
-        <span style="color: #991b1b; font-weight: 800; font-size: 0.9rem;">${t.dangerTitle}</span>
-        <p style="margin:0; font-size: 0.85rem; color: #7f1d1d;">${t.dangerText}</p>
-        <input type="text" id="confirmDeleteInput" placeholder="${t.inputPlaceholder}" style="padding: 8px; border-radius: 8px; border: 2px solid #f87171; text-align: center; font-weight: 800; width: 100%; box-sizing: border-box;">
-        <div id="holdDeleteBtnContainer" style="position: relative; overflow: hidden; border-radius: 10px; opacity: 0.5; pointer-events: none; transition: opacity 0.3s; background: #fee2e2; border: 2px solid #f87171;">
-          <div id="holdProgressBar" style="position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: #ef4444; z-index: 1;"></div>
-          <button id="btnFinalDelete" style="position: relative; z-index: 2; width: 100%; background: transparent; color: #991b1b; border: none; padding: 12px; font-weight: 900; cursor: pointer; text-align: center;">
-            ${t.holdButton}
-          </button>
-        </div>
-      `;
-      
-      document.getElementById('confirmDeleteInput').addEventListener('input', (e) => {
-        const holdCont = document.getElementById('holdDeleteBtnContainer');
-        if (e.target.value.trim().toUpperCase() === t.keyword) {
-          holdCont.style.opacity = '1';
-          holdCont.style.pointerEvents = 'auto';
-        } else {
-          holdCont.style.opacity = '0.5';
-          holdCont.style.pointerEvents = 'none';
-          resetHoldDeleteButton();
-        }
-      });
-
-      const newFinalBtn = document.getElementById('btnFinalDelete');
-      newFinalBtn.addEventListener('mousedown', startHoldTimer);
-      newFinalBtn.addEventListener('mouseup', cancelHoldTimer);
-      newFinalBtn.addEventListener('mouseleave', cancelHoldTimer);
-      newFinalBtn.addEventListener('touchstart', startHoldTimer);
-      newFinalBtn.addEventListener('touchend', cancelHoldTimer);
+      // Textos fijos traducidos
+      document.getElementById('dangerTitleText').innerText = t.dangerTitle;
+      document.getElementById('dangerDescText').innerHTML = t.dangerText;
+      document.getElementById('confirmDeleteInput').placeholder = t.inputPlaceholder;
+      document.getElementById('btnFinalDelete').innerText = t.holdButton;
 
       resetHoldDeleteButton();
 
@@ -1702,6 +1682,24 @@
       };
     }
 
+    // Input de confirmación fijo con escucha limpia
+    const confirmInput = document.getElementById('confirmDeleteInput');
+    if (confirmInput) {
+      confirmInput.oninput = (e) => {
+        const lang = (typeof currentLang !== 'undefined' && profileModalTranslations[currentLang]) ? currentLang : 'es';
+        const t = profileModalTranslations[lang];
+        const holdCont = document.getElementById('holdDeleteBtnContainer');
+        if (e.target.value.trim().toUpperCase() === t.keyword) {
+          holdCont.style.opacity = '1';
+          holdCont.style.pointerEvents = 'auto';
+        } else {
+          holdCont.style.opacity = '0.5';
+          holdCont.style.pointerEvents = 'none';
+          resetHoldDeleteButton();
+        }
+      };
+    }
+
     // Funciones del temporizador de borrado con animación fluida de la barra roja
     function startHoldTimer(e) {
       e.preventDefault();
@@ -1740,7 +1738,7 @@
       cancelHoldTimer();
       const progressBar = document.getElementById('holdProgressBar');
       const holdContainer = document.getElementById('holdDeleteBtnContainer');
-      const confirmInput = document.getElementById('confirmDeleteInput');
+      const confirmInputElem = document.getElementById('confirmDeleteInput');
       
       if (progressBar) {
         progressBar.style.transition = 'none';
@@ -1750,9 +1748,18 @@
         holdContainer.style.opacity = '0.5';
         holdContainer.style.pointerEvents = 'none';
       }
-      if (confirmInput) {
-        confirmInput.value = '';
+      if (confirmInputElem) {
+        confirmInputElem.value = '';
       }
+    }
+
+    const finalDeleteBtn = document.getElementById('btnFinalDelete');
+    if (finalDeleteBtn) {
+      finalDeleteBtn.addEventListener('mousedown', startHoldTimer);
+      finalDeleteBtn.addEventListener('mouseup', cancelHoldTimer);
+      finalDeleteBtn.addEventListener('mouseleave', cancelHoldTimer);
+      finalDeleteBtn.addEventListener('touchstart', startHoldTimer);
+      finalDeleteBtn.addEventListener('touchend', cancelHoldTimer);
     }
 
     function executePermanentDeletion() {
@@ -1779,6 +1786,8 @@
         document.getElementById('deleteSecureSection').style.display = 'flex';
         const lang = (typeof currentLang !== 'undefined' && profileModalTranslations[currentLang]) ? currentLang : 'es';
         document.getElementById('modalTitle').innerText = profileModalTranslations[lang].zoneTitle || '⚠️ Zona de Borrado';
+        const confirmInputElem = document.getElementById('confirmDeleteInput');
+        if (confirmInputElem) confirmInputElem.focus();
       };
     }
 
