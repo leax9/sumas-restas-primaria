@@ -78,7 +78,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      min-width: 0; /* Evita que desborde en flexbox */
+      min-width: 0;
     }
 
     .profile-pill {
@@ -100,7 +100,7 @@
       font-size: 1.05rem;
       font-weight: 800;
       color: var(--primary);
-      white-space: nowrap; /* Impide que el texto salte a otra línea */
+      white-space: nowrap;
     }
 
     .header-badges {
@@ -675,7 +675,7 @@
         <div id="deleteSecureSection" style="display: none; flex-direction: column; gap: 12px; background: #fef2f2; border: 2px solid #fecaca; padding: 14px; border-radius: 12px;">
           <span id="dangerTitleText" style="color: #991b1b; font-weight: 800; font-size: 0.9rem;">⚠️ Zona de Peligro: Borrado Permanente</span>
           <p id="dangerDescText" style="margin:0; font-size: 0.85rem; color: #7f1d1d;">Para evitar borrados accidentales por niños, escribe la palabra clave:</p>
-          <input type="text" id="confirmDeleteInput" autocomplete="off" placeholder="ELIMINAR" style="padding: 8px; border-radius: 8px; border: 2px solid #f87171; text-align: center; font-weight: 800; width: 100%; box-sizing: border-box; background: #fff;">
+          <input type="text" id="confirmDeleteInput" autocomplete="off" placeholder="ELIMINAR" style="padding: 10px; border-radius: 8px; border: 2px solid #f87171; text-align: center; font-weight: 800; font-size: 1rem; width: 100%; box-sizing: border-box; background: #fff; outline: none;">
           <div id="holdDeleteBtnContainer" style="position: relative; overflow: hidden; border-radius: 10px; opacity: 0.5; pointer-events: none; transition: opacity 0.3s; background: #fee2e2; border: 2px solid #f87171;">
             <div id="holdProgressBar" style="position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: #ef4444; z-index: 1;"></div>
             <button id="btnFinalDelete" style="position: relative; z-index: 2; width: 100%; background: transparent; color: #991b1b; border: none; padding: 12px; font-weight: 900; cursor: pointer; text-align: center;">
@@ -1629,10 +1629,14 @@
       document.getElementById('btnModalCancel').innerText = t.cancel;
       document.getElementById('btnModalSave').innerText = t.save;
       
+      // Limpiar y resetear el input de borrado cada vez que se abre
+      const confirmInput = document.getElementById('confirmDeleteInput');
+      if (confirmInput) confirmInput.value = '';
+
       // Textos fijos traducidos
       document.getElementById('dangerTitleText').innerText = t.dangerTitle;
       document.getElementById('dangerDescText').innerHTML = t.dangerText;
-      document.getElementById('confirmDeleteInput').placeholder = t.inputPlaceholder;
+      confirmInput.placeholder = t.inputPlaceholder;
       document.getElementById('btnFinalDelete').innerText = t.holdButton;
 
       resetHoldDeleteButton();
@@ -1684,10 +1688,10 @@
       };
     }
 
-    // Input de confirmación fijo con escucha limpia
+    // Input de confirmación corregido con evento nativo directo y robusto
     const confirmInput = document.getElementById('confirmDeleteInput');
     if (confirmInput) {
-      confirmInput.oninput = (e) => {
+      confirmInput.addEventListener('input', (e) => {
         const lang = (typeof currentLang !== 'undefined' && profileModalTranslations[currentLang]) ? currentLang : 'es';
         const t = profileModalTranslations[lang];
         const holdCont = document.getElementById('holdDeleteBtnContainer');
@@ -1699,7 +1703,7 @@
           holdCont.style.pointerEvents = 'none';
           resetHoldDeleteButton();
         }
-      };
+      });
     }
 
     // Funciones del temporizador de borrado con animación fluida de la barra roja
@@ -1740,7 +1744,6 @@
       cancelHoldTimer();
       const progressBar = document.getElementById('holdProgressBar');
       const holdContainer = document.getElementById('holdDeleteBtnContainer');
-      const confirmInputElem = document.getElementById('confirmDeleteInput');
       
       if (progressBar) {
         progressBar.style.transition = 'none';
@@ -1749,9 +1752,6 @@
       if (holdContainer) {
         holdContainer.style.opacity = '0.5';
         holdContainer.style.pointerEvents = 'none';
-      }
-      if (confirmInputElem) {
-        confirmInputElem.value = '';
       }
     }
 
@@ -1788,8 +1788,15 @@
         document.getElementById('deleteSecureSection').style.display = 'flex';
         const lang = (typeof currentLang !== 'undefined' && profileModalTranslations[currentLang]) ? currentLang : 'es';
         document.getElementById('modalTitle').innerText = profileModalTranslations[lang].zoneTitle || '⚠️ Zona de Borrado';
-        const confirmInputElem = document.getElementById('confirmDeleteInput');
-        if (confirmInputElem) confirmInputElem.focus();
+        
+        // Forzar el foco explícitamente para que se abra el teclado y permita escribir
+        setTimeout(() => {
+          const confirmInputElem = document.getElementById('confirmDeleteInput');
+          if (confirmInputElem) {
+            confirmInputElem.value = '';
+            confirmInputElem.focus();
+          }
+        }, 50);
       };
     }
 
