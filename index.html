@@ -651,6 +651,46 @@
       </div>
     </div>
 
+    <!-- Modal de Gestión y Borrado Seguro de Perfil -->
+    <div id="profileModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; justify-content:center; align-items:center; padding: 20px;">
+      <div style="background: white; padding: 24px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 16px;">
+        <h3 id="modalTitle" style="margin:0; font-size: 1.25rem; color: var(--text-main);">Editar Perfil</h3>
+        
+        <!-- Sección de Edición -->
+        <div id="editSection" style="display: flex; flex-direction: column; gap: 12px;">
+          <label style="font-size: 0.9rem; font-weight: 700;">Nombre:</label>
+          <input type="text" id="editProfileName" class="profile-input" style="padding: 10px; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 1rem;">
+          
+          <label style="font-size: 0.9rem; font-weight: 700;">Avatar:</label>
+          <div id="editAvatarList" style="display: flex; gap: 8px; justify-content: center; font-size: 1.5rem; cursor: pointer;">
+            <!-- Se rellena por JS -->
+          </div>
+        </div>
+    
+        <!-- Sección de Borrado Seguro (Oculta por defecto hasta que pulsen "Eliminar") -->
+        <div id="deleteSecureSection" style="display: none; flex-direction: column; gap: 12px; background: #fef2f2; border: 2px solid #fecaca; padding: 14px; border-radius: 12px;">
+          <span style="color: #991b1b; font-weight: 800; font-size: 0.9rem;">⚠️ Zona de Peligro: Borrado Permanente</span>
+          <p style="margin:0; font-size: 0.85rem; color: #7f1d1d;">Para evitar borrados accidentales por niños, escribe la palabra <b>ELIMINAR</b> en mayúsculas:</p>
+          <input type="text" id="confirmDeleteInput" placeholder="Escribe ELIMINAR" style="padding: 8px; border-radius: 8px; border: 2px solid #f87171; text-align: center; font-weight: 800;">
+          
+          <!-- Botón con presión prolongada (2 segundos) y barra de progreso -->
+          <div id="holdDeleteBtnContainer" style="position: relative; overflow: hidden; border-radius: 10px; opacity: 0.5; pointer-events: none; transition: opacity 0.3s;">
+            <div id="holdProgressBar" style="position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: #dc2626; transition: width 0.1s linear; z-index: 1;"></div>
+            <button id="btnFinalDelete" style="position: relative; z-index: 2; width: 100%; background: #ef4444; color: white; border: none; padding: 12px; font-weight: 800; border-radius: 10px; cursor: pointer; text-align: center;">
+              Mantén pulsado 2s para borrar 🛑
+            </button>
+          </div>
+        </div>
+    
+        <!-- Botones de Acción de la Modal -->
+        <div style="display: flex; gap: 10px; margin-top: 8px;">
+          <button id="btnModalCancel" style="flex: 1; background: #e2e8f0; border: none; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer;">Cancelar</button>
+          <button id="btnModalSave" style="flex: 1; background: var(--primary); color: white; border: none; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer;">Guardar cambios</button>
+          <button id="btnModalTriggerDelete" style="background: #fee2e2; color: #dc2626; border: 2px solid #fca5a5; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer;" title="Eliminar perfil">🗑️</button>
+        </div>
+      </div>
+    </div>
+
     <!-- PANTALLA 1: CONFIGURACIÓN -->
     <div id="screenSetup" class="screen">
       <div>
@@ -1527,6 +1567,147 @@
       }
     });
     
+    let profileToEditId = null;
+    let holdTimer = null;
+    let holdStartTime = null;
+
+    // Función para abrir la modal de gestión de un perfil
+    function openProfileModal(profileId) {
+      profileToEditId = profileId;
+      const profiles = getProfiles();
+      const profile = profiles.find(p => p.id === profileId);
+      if (!profile) return;
+
+      document.getElementById('editProfileName').value = profile.name;
+      document.getElementById('editSection').style.display = 'flex';
+      document.getElementById('deleteSecureSection').style.display = 'none';
+      document.getElementById('btnModalSave').style.display = 'block';
+      document.getElementById('modalTitle').innerText = 'Editar Perfil';
+      document.getElementById('confirmDeleteInput').value = '';
+      resetHoldDeleteButton();
+
+      const avatars = ['🦁', '🦖', '🦄', '🚀', '🐼', '⭐', '🐯', '🦊'];
+      const avatarListContainer = document.getElementById('editAvatarList');
+      avatarListContainer.innerHTML = '';
+      avatars.forEach(av => {
+        const span = document.createElement('span');
+        span.innerText = av;
+        span.style.padding = '4px 8px';
+        span.style.borderRadius = '8px';
+        if (av === profile.avatar) span.style.background = '#e2e8f0';
+        span.addEventListener('click', () => {
+          Array.from(avatarListContainer.children).forEach(el => el.style.background = 'transparent');
+          span.style.background = '#e2e8f0';
+          profile.tempAvatar = av;
+        });
+        avatarListContainer.appendChild(span);
+      });
+      profile.tempAvatar = profile.avatar;
+
+      document.getElementById('profileModal').style.display = 'flex';
+    }
+
+    // Configuración del sistema de borrado seguro con pulsación de 2 segundos
+    const confirmInput = document.getElementById('confirmDeleteInput');
+    const holdContainer = document.getElementById('holdDeleteBtnContainer');
+    const progressBar = document.getElementById('holdProgressBar');
+    const finalDeleteBtn = document.getElementById('btnFinalDelete');
+
+    confirmInput.addEventListener('input', (e) => {
+      if (e.target.value.trim() === 'ELIMINAR') {
+        holdContainer.style.opacity = '1';
+        holdContainer.style.pointerEvents = 'auto';
+      } else {
+        holdContainer.style.opacity = '0.5';
+        holdContainer.style.pointerEvents = 'none';
+        resetHoldDeleteButton();
+      }
+    });
+
+    function startHoldTimer(e) {
+      e.preventDefault();
+      holdStartTime = Date.now();
+      progressBar.style.width = '100%';
+      progressBar.style.transition = 'width 2s linear';
+      
+      holdTimer = setTimeout(() => {
+        executePermanentDeletion();
+      }, 2000);
+    }
+
+    function cancelHoldTimer() {
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        holdTimer = null;
+        progressBar.style.transition = 'none';
+        const currentWidth = progressBar.offsetWidth;
+        const parentWidth = holdContainer.offsetWidth;
+        const currentPercent = (currentWidth / parentWidth) * 100;
+        progressBar.style.width = currentPercent + '%';
+        setTimeout(() => {
+          progressBar.style.transition = 'width 0.3s ease';
+          progressBar.style.width = '0%';
+        }, 50);
+      }
+    }
+
+    function resetHoldDeleteButton() {
+      cancelHoldTimer();
+      progressBar.style.width = '0%';
+      holdContainer.style.opacity = '0.5';
+      holdContainer.style.pointerEvents = 'none';
+      confirmInput.value = '';
+    }
+
+    if (finalDeleteBtn) {
+      finalDeleteBtn.addEventListener('mousedown', startHoldTimer);
+      finalDeleteBtn.addEventListener('mouseup', cancelHoldTimer);
+      finalDeleteBtn.addEventListener('mouseleave', cancelHoldTimer);
+      finalDeleteBtn.addEventListener('touchstart', startHoldTimer);
+      finalDeleteBtn.addEventListener('touchend', cancelHoldTimer);
+    }
+
+    function executePermanentDeletion() {
+      let profiles = getProfiles();
+      profiles = profiles.filter(p => p.id !== profileToEditId);
+      localStorage.setItem('math_profiles', JSON.stringify(profiles));
+      localStorage.removeItem('math_stats_' + profileToEditId);
+      document.getElementById('profileModal').style.display = 'none';
+      renderProfilesScreen();
+    }
+
+    const btnModalCancel = document.getElementById('btnModalCancel');
+    if (btnModalCancel) {
+      btnModalCancel.addEventListener('click', () => {
+        document.getElementById('profileModal').style.display = 'none';
+      });
+    }
+
+    const btnModalTriggerDelete = document.getElementById('btnModalTriggerDelete');
+    if (btnModalTriggerDelete) {
+      btnModalTriggerDelete.addEventListener('click', () => {
+        document.getElementById('editSection').style.display = 'none';
+        document.getElementById('btnModalSave').style.display = 'none';
+        document.getElementById('deleteSecureSection').style.display = 'flex';
+        document.getElementById('modalTitle').innerText = '⚠️ Zona de Borrado';
+      });
+    }
+
+    const btnModalSave = document.getElementById('btnModalSave');
+    if (btnModalSave) {
+      btnModalSave.addEventListener('click', () => {
+        let profiles = getProfiles();
+        const p = profiles.find(item => item.id === profileToEditId);
+        if (p) {
+          p.name = document.getElementById('editProfileName').value.trim() || p.name;
+          if (p.tempAvatar) p.avatar = p.tempAvatar;
+          localStorage.setItem('math_profiles', JSON.stringify(profiles));
+        }
+        document.getElementById('profileModal').style.display = 'none';
+        renderProfilesScreen();
+      });
+    }
+
     /* --- SISTEMA DE CONTROL DE VERSIÓN Y ESTADO PWA --- */
     let newWorker = null;
 
@@ -1537,17 +1718,16 @@
             newWorker = reg.installing;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                showUpdateUI(true); // Muestra el botón de actualizar
+                showUpdateUI(true);
               }
             });
           });
 
-          // Si ya hay un worker esperando al cargar la página
           if (reg.waiting) {
             newWorker = reg.waiting;
             showUpdateUI(true);
           } else {
-            showUpdateUI(false); // Muestra el indicador de "Estás al día"
+            showUpdateUI(false);
           }
         });
 
@@ -1574,7 +1754,6 @@
       }
 
       if (hasUpdate) {
-        // Hay actualización pendiente: Botón fijo que no desaparece
         container.innerHTML = `
           <div style="background: #eff6ff; border: 2px dashed var(--primary); border-radius: 14px; padding: 12px 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; width: 100%; max-width: 320px;">
             <span style="font-weight: 800; font-size: 0.9rem; color: var(--primary);">✨ ¡Hay una nueva versión disponible!</span>
@@ -1587,7 +1766,6 @@
           }
         });
       } else {
-        // Estás totalmente al día: Indicador verde fijo y limpio
         container.innerHTML = `
           <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 20px; padding: 6px 14px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700; color: #166534;">
             <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 2px rgba(34,197,94,0.2);"></span>
