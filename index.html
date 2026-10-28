@@ -831,7 +831,7 @@
   </div>
 
   <script>
-    /* --- TRADUCCIONES TRILINGÜES --- */
+    /* --- TRADUCCIONES TRILINGÜES COMPLETAS --- */
     const i18n = {
       es: {
         appTitle: "Mates 1.º",
@@ -878,7 +878,8 @@
         lblAcc: "Aciertos",
         lblStars: "Estrellas",
         lblHistoryLog: "Registro detallado:",
-        btnPDF: "🖨️ Guardar Informe PDF"
+        btnPDF: "🖨️ Guardar Informe PDF",
+        lblCorrectsWord: "aciertos"
       },
       ca: {
         appTitle: "Mates 1r",
@@ -925,7 +926,8 @@
         lblAcc: "Encerts",
         lblStars: "Estrelles",
         lblHistoryLog: "Registre detallat:",
-        btnPDF: "🖨️ Desar Informe PDF"
+        btnPDF: "🖨️ Desar Informe PDF",
+        lblCorrectsWord: "encerts"
       },
       en: {
         appTitle: "Math 1st",
@@ -972,7 +974,8 @@
         lblAcc: "Accuracy",
         lblStars: "Stars",
         lblHistoryLog: "Detailed log:",
-        btnPDF: "🖨️ Save PDF Report"
+        btnPDF: "🖨️ Save PDF Report",
+        lblCorrectsWord: "correct"
       }
     };
 
@@ -1468,7 +1471,8 @@
       soundFanfare();
 
       document.getElementById('resTitle').textContent = titleText;
-      document.getElementById('scorePill').textContent = `${correctCount} / ${total} aciertos`;
+      // Traducción dinámica de aciertos aplicada aquí
+      document.getElementById('scorePill').textContent = `${correctCount} / ${total} ${i18n[currentLang].lblCorrectsWord}`;
 
       const starIcons = document.querySelectorAll('#starsRow .star-icon');
       starIcons.forEach((st, idx) => {
@@ -1684,7 +1688,6 @@
       };
     }
 
-    // CORRECCIÓN DEFINITIVA: Listener de entrada independiente, limpio y robusto para el input
     const confirmInput = document.getElementById('confirmDeleteInput');
     if (confirmInput) {
       confirmInput.addEventListener('input', function(e) {
