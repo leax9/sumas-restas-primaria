@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mates-primaria-v4'; // Incrementa este número si haces cambios importantes
+const CACHE_NAME = 'mates-primaria-v5'; // Incrementa este número (v5, v6...) cada vez que subas cambios importantes
 const ASSETS = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
+  self.skipWaiting(); // Fuerza a que el nuevo Service Worker se instale inmediatamente
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
@@ -20,23 +21,16 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
+// Estrategia optimizada para buscar siempre red primero si hay conexión, y si no, tirar de caché
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      const fetchPromise = fetch(e.request).then((networkResponse) => {
-        caches.open(CACHE_NAME).then((cache) => {
+    fetch(e.request)
+      .then((networkResponse) => {
+        return caches.open(CACHE_NAME).then((cache) => {
           cache.put(e.request, networkResponse.clone());
+          return networkResponse;
         });
-        return networkResponse;
-      }).catch(() => cachedResponse);
-      return cachedResponse || fetchPromise;
-    })
+      })
+      .catch(() => caches.match(e.request))
   );
-});
-
-// Escuchar orden de forzar actualización desde la interfaz
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
 });
