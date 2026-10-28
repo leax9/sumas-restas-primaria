@@ -971,12 +971,10 @@
       grid.innerHTML = '';
 
       if (profiles.length === 0) {
-        const defaultProfile = { id: 'prof_' + Date.now(), name: 'Nil', avatar: '🦁', history: [], compressedMonths: {} };
-        saveProfiles([defaultProfile]);
-        currentProfileId = defaultProfile.id;
-        localStorage.setItem('active_profile_id', currentProfileId);
-        loadProfileData();
-        return;
+        // Ya no creamos ningún perfil por defecto ("Nil"). 
+        // La pantalla de selección aparecerá limpia esperando a que el usuario cree el suyo.
+        currentProfileId = null;
+        localStorage.removeItem('active_profile_id');
       }
 
       profiles.forEach(p => {
@@ -996,7 +994,13 @@
         currentProfileId = profiles[0].id;
         localStorage.setItem('active_profile_id', currentProfileId);
       }
-      loadProfileData();
+      
+      // Si no hay perfiles, abrimos directamente la pantalla para que creen el primero
+      if (profiles.length === 0) {
+        switchScreen('screenProfiles');
+      } else {
+        loadProfileData();
+      }
     }
 
     function loadProfileData() {
