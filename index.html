@@ -1579,18 +1579,104 @@
     let holdStartTime = null;
 
     // Función para abrir la modal de gestión de un perfil
+    // Diccionario de traducciones trilingüe para la Modal de Perfil
+    const profileModalTranslations = {
+      es: {
+        editTitle: "Editar Perfil",
+        dangerTitle: "⚠️ Zona de Peligro: Borrado Permanente",
+        nameLabel: "Nombre:",
+        avatarLabel: "Avatar:",
+        dangerText: "Para evitar borrados accidentales por niños, escribe la palabra <b>ELIMINAR</b> en mayúsculas:",
+        inputPlaceholder: "Escribe ELIMINAR",
+        keyword: "ELIMINAR",
+        holdButton: "Mantén pulsado 2s para borrar 🛑",
+        cancel: "Cancelar",
+        save: "Guardar cambios",
+        zoneTitle: "⚠️ Zona de Borrado"
+      },
+      ca: {
+        editTitle: "Editar Perfil",
+        dangerTitle: "⚠️ Zona de Perill: Esborrat Permanent",
+        nameLabel: "Nom:",
+        avatarLabel: "Avatar:",
+        dangerText: "Per evitar esborrats accidentals per nens, escriu la paraula <b>ESBORRAR</b> en majúscules:",
+        inputPlaceholder: "Escriu ESBORRAR",
+        keyword: "ESBORRAR",
+        holdButton: "Mantén premut 2s per esborrar 🛑",
+        cancel: "Cancel·lar",
+        save: "Desar canvis",
+        zoneTitle: "⚠️ Zona d'Esborrat"
+      },
+      en: {
+        editTitle: "Edit Profile",
+        dangerTitle: "⚠️ Danger Zone: Permanent Deletion",
+        nameLabel: "Name:",
+        avatarLabel: "Avatar:",
+        dangerText: "To prevent accidental deletion by children, type the word <b>DELETE</b> in uppercase:",
+        inputPlaceholder: "Type DELETE",
+        keyword: "DELETE",
+        holdButton: "Hold 2s to delete 🛑",
+        cancel: "Cancel",
+        save: "Save changes",
+        zoneTitle: "⚠️ Deletion Zone"
+      }
+    };
+
+    // Función modificada para abrir la modal aplicando el idioma actual (es, ca, en)
     function openProfileModal(profileId) {
       profileToEditId = profileId;
       const profiles = getProfiles();
       const profile = profiles.find(p => p.id === profileId);
       if (!profile) return;
 
+      // Detectar idioma actual (soporta 'es', 'ca', 'en' por defecto 'es')
+      const lang = (typeof currentLang !== 'undefined' && profileModalTranslations[currentLang]) ? currentLang : 'es';
+      const t = profileModalTranslations[lang];
+
+      // Aplicar textos traducidos a los elementos base
       document.getElementById('editProfileName').value = profile.name;
       document.getElementById('editSection').style.display = 'flex';
       document.getElementById('deleteSecureSection').style.display = 'none';
       document.getElementById('btnModalSave').style.display = 'block';
-      document.getElementById('modalTitle').innerText = 'Editar Perfil';
-      document.getElementById('confirmDeleteInput').value = '';
+      document.getElementById('modalTitle').innerText = t.editTitle;
+      document.getElementById('btnModalCancel').innerText = t.cancel;
+      document.getElementById('btnModalSave').innerText = t.save;
+      
+      // Construir la sección de peligro traducida
+      const dangerBox = document.getElementById('deleteSecureSection');
+      dangerBox.innerHTML = `
+        <span style="color: #991b1b; font-weight: 800; font-size: 0.9rem;">${t.dangerTitle}</span>
+        <p style="margin:0; font-size: 0.85rem; color: #7f1d1d;">${t.dangerText}</p>
+        <input type="text" id="confirmDeleteInput" placeholder="${t.inputPlaceholder}" style="padding: 8px; border-radius: 8px; border: 2px solid #f87171; text-align: center; font-weight: 800;">
+        <div id="holdDeleteBtnContainer" style="position: relative; overflow: hidden; border-radius: 10px; opacity: 0.5; pointer-events: none; transition: opacity 0.3s;">
+          <div id="holdProgressBar" style="position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: #dc2626; transition: width 0.1s linear; z-index: 1;"></div>
+          <button id="btnFinalDelete" style="position: relative; z-index: 2; width: 100%; background: #ef4444; color: white; border: none; padding: 12px; font-weight: 800; border-radius: 10px; cursor: pointer; text-align: center;">
+            ${t.holdButton}
+          </button>
+        </div>
+      `;
+      
+      // Validar la palabra clave según el idioma activo (ELIMINAR / ESBORRAR / DELETE)
+      document.getElementById('confirmDeleteInput').addEventListener('input', (e) => {
+        const holdCont = document.getElementById('holdDeleteBtnContainer');
+        if (e.target.value.trim().toUpperCase() === t.keyword) {
+          holdCont.style.opacity = '1';
+          holdCont.style.pointerEvents = 'auto';
+        } else {
+          holdCont.style.opacity = '0.5';
+          holdCont.style.pointerEvents = 'none';
+          resetHoldDeleteButton();
+        }
+      });
+
+      // Reasignar eventos al botón de borrado recreado
+      const newFinalBtn = document.getElementById('btnFinalDelete');
+      newFinalBtn.addEventListener('mousedown', startHoldTimer);
+      newFinalBtn.addEventListener('mouseup', cancelHoldTimer);
+      newFinalBtn.addEventListener('mouseleave', cancelHoldTimer);
+      newFinalBtn.addEventListener('touchstart', startHoldTimer);
+      newFinalBtn.addEventListener('touchend', cancelHoldTimer);
+
       resetHoldDeleteButton();
 
       const avatars = ['🦁', '🦖', '🦄', '🚀', '🐼', '⭐', '🐯', '🦊'];
