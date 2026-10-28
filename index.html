@@ -1526,8 +1526,8 @@
         switchScreen('screenSetup');
       }
     });
-
-    /* --- SISTEMA DE DETECCIÓN Y BOTÓN DE ACTUALIZACIÓN EN PERFILES --- */
+    
+    /* --- SISTEMA DE CONTROL DE VERSIÓN Y ESTADO PWA --- */
     let newWorker = null;
 
     if ('serviceWorker' in navigator) {
@@ -1537,15 +1537,17 @@
             newWorker = reg.installing;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                showProfileUpdateBanner();
+                showUpdateUI(true); // Muestra el botón de actualizar
               }
             });
           });
 
-          // Comprobar si ya hay un worker esperando al cargar
+          // Si ya hay un worker esperando al cargar la página
           if (reg.waiting) {
             newWorker = reg.waiting;
-            showProfileUpdateBanner();
+            showUpdateUI(true);
+          } else {
+            showUpdateUI(false); // Muestra el indicador de "Estás al día"
           }
         });
 
@@ -1559,29 +1561,40 @@
       });
     }
 
-    function showProfileUpdateBanner() {
-      // Buscamos si ya existe el contenedor en la pantalla de perfiles
+    function showUpdateUI(hasUpdate) {
       const profilesScreen = document.getElementById('screenProfiles');
       if (!profilesScreen) return;
 
-      let banner = document.getElementById('updateBanner');
-      if (!banner) {
-        banner = document.createElement('div');
-        banner.id = 'updateBanner';
-        banner.style.cssText = "background: #eff6ff; border: 2px dashed var(--primary); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 10px; text-align: center;";
-        banner.innerHTML = `
-          <span style="font-weight: 800; font-size: 0.9rem; color: var(--primary);">✨ ¡Hay una nueva versión disponible!</span>
-          <button id="btnAppUpdate" class="start-btn" style="padding: 8px 16px; font-size: 0.95rem; margin-top: 0; box-shadow: 0 3px 0 var(--green-dark);">Actualizar ahora 🚀</button>
-        `;
-        profilesScreen.appendChild(banner);
+      let container = document.getElementById('versionStatusContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'versionStatusContainer';
+        container.style.cssText = "margin-top: 15px; display: flex; justify-content: center; width: 100%;";
+        profilesScreen.appendChild(container);
+      }
 
+      if (hasUpdate) {
+        // Hay actualización pendiente: Botón fijo que no desaparece
+        container.innerHTML = `
+          <div style="background: #eff6ff; border: 2px dashed var(--primary); border-radius: 14px; padding: 12px 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; width: 100%; max-width: 320px;">
+            <span style="font-weight: 800; font-size: 0.9rem; color: var(--primary);">✨ ¡Hay una nueva versión disponible!</span>
+            <button id="btnAppUpdate" class="start-btn" style="padding: 8px 16px; font-size: 0.95rem; margin-top: 0; box-shadow: 0 3px 0 var(--green-dark); width: 100%;">Actualizar ahora 🚀</button>
+          </div>
+        `;
         document.getElementById('btnAppUpdate').addEventListener('click', () => {
           if (newWorker) {
             newWorker.postMessage({ type: 'SKIP_WAITING' });
           }
         });
+      } else {
+        // Estás totalmente al día: Indicador verde fijo y limpio
+        container.innerHTML = `
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 20px; padding: 6px 14px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700; color: #166534;">
+            <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 2px rgba(34,197,94,0.2);"></span>
+            Aplicación actualizada (Última versión)
+          </div>
+        `;
       }
-      banner.style.display = 'flex';
     }
   </script>
 </body>
