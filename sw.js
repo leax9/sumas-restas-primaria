@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mates-primaria-v5'; // Incrementa este número (v5, v6...) cada vez que subas cambios importantes
+const CACHE_NAME = 'mates-primaria-v7'; // Versión actualizada con gestión segura de perfiles
 const ASSETS = [
   './',
   './index.html',
@@ -6,7 +6,6 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-  self.skipWaiting(); // Fuerza a que el nuevo Service Worker se instale inmediatamente
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
@@ -21,16 +20,22 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
-// Estrategia optimizada para buscar siempre red primero si hay conexión, y si no, tirar de caché
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    fetch(e.request)
-      .then((networkResponse) => {
+    caches.match(e.request).then((cachedResponse) => {
+      const fetchPromise = fetch(e.request).then((networkResponse) => {
         return caches.open(CACHE_NAME).then((cache) => {
           cache.put(e.request, networkResponse.clone());
           return networkResponse;
         });
-      })
-      .catch(() => caches.match(e.request))
+      }).catch(() => {});
+      return cachedResponse || fetchPromise;
+    })
   );
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
