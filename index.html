@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mates de Primaria</title>
+
+  <!-- Etiquetas para Pantalla Completa en iOS y Android (PWA) -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Mates 1º" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#2563eb" />
+  <link rel="manifest" href="./manifest.json" />
+
+  <!-- Icono SVG embebido en Base64 (No requiere internet) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-family='Arial,sans-serif' font-size='55' font-weight='bold' fill='white' text-anchor='middle'%3E1+2%3C/text%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-family='Arial,sans-serif' font-size='55' font-weight='bold' fill='white' text-anchor='middle'%3E1+2%3C/text%3E%3C/svg%3E" />
+
+  <style>
+    /* CSS 100% Nativo - Cero dependencias externas */
+    :root {
+      --bg: #f0f7ff;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --green: #16a34a;
+      --green-dark: #15803d;
+      --amber: #f59e0b;
+      --red: #dc2626;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --col-c: #16a34a; /* Centenas: Verde */
+      --col-d: #dc2626; /* Decenas: Rojo */
+      --col-u: #2563eb; /* Unidades: Azul */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Cabecera */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card);
+      padding: 12px 16px;
+      border-radius: 18px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 2px solid var(--border);
+    }
+
+    .title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stars-badge {
+      background: #fef3c7;
+      border: 2px solid #fcd34d;
+      color: #b45309;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1rem;
+    }
+
+    /* Tarjetas y Pantallas */
+    .screen {
+      display: none;
+      background: var(--card);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      border: 2px solid var(--border);
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Configuración */
+    .section-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .grid-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .grid-options.two-cols {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .opt-btn {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+
+    .opt-btn.selected {
+      background: #eff6ff;
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 3px 0 var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .start-btn {
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 5px 0 var(--green-dark);
+      transition: transform 0.1s;
+      margin-top: 6px;
+    }
+
+    .start-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 var(--green-dark);
+    }
+
+    /* Barra de progreso del juego */
+    .game-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .back-btn {
+      background: #f1f5f9;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .progress-wrap {
+      flex: 1;
+      background: #e2e8f0;
+      height: 12px;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      background: var(--primary);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .counter-text {
+      font-weight: 800;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* Hoja de Libreta (Operación Vertical) */
+    .notebook {
+      background-color: #fffdf9;
+      background-image: 
+        linear-gradient(#e5e7eb 1px, transparent 1px),
+        linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
+      background-size: 28px 28px;
+      border: 2px solid #cbd5e1;
+      border-radius: 18px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .math-grid {
+      display: grid;
+      grid-template-columns: 40px repeat(4, 52px);
+      align-items: center;
+      justify-items: center;
+      gap: 4px;
+    }
+
+    .col-header {
+      font-size: 0.9rem;
+      font-weight: 900;
+      padding-bottom: 2px;
+    }
+    .col-c { color: var(--col-c); }
+    .col-d { color: var(--col-d); }
+    .col-u { color: var(--col-u); }
+
+    /* Circulitos de llevadas */
+    .carry-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px dashed #94a3b8;
+      background: white;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--amber);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-bottom: 4px;
+    }
+    .carry-circle.active {
+      border-style: solid;
+      border-color: var(--amber);
+      background: #fffbeb;
+    }
+
+    .digit-cell {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .op-symbol {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--primary);
+    }
+
+    .math-line {
+      grid-column: 1 / -1;
+      width: 100%;
+      height: 4px;
+      background: var(--text);
+      border-radius: 2px;
+      margin: 4px 0 8px 0;
+    }
+
+    /* Cajas de respuesta */
+    .ans-box {
+      width: 48px;
+      height: 56px;
+      border: 3px solid #cbd5e1;
+      border-radius: 12px;
+      background: white;
+      font-size: 2.2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .ans-box.focused {
+      border-color: var(--primary);
+      background: #eff6ff;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+      transform: scale(1.05);
+    }
+
+    .ans-box.correct {
+      border-color: var(--green);
+      background: #dcfce7;
+      color: var(--green-dark);
+    }
+
+    .ans-box.wrong {
+      border-color: var(--red);
+      background: #fee2e2;
+      color: var(--red);
+    }
+
+    .feedback-msg {
+      min-height: 24px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    /* Teclado Numérico Táctil */
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .key-btn {
+      background: #f8fafc;
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px 0;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+      cursor: pointer;
+      box-shadow: 0 3px 0 #cbd5e1;
+      transition: transform 0.08s;
+    }
+
+    .key-btn:active {
+      transform: translateY(3px);
+      box-shadow: none;
+    }
+
+    .key-btn.del-btn {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: var(--red);
+      box-shadow: 0 3px 0 #fca5a5;
+      font-size: 1.2rem;
+    }
+
+    .key-btn.ok-btn {
+      background: var(--primary);
+      border-color: var(--primary-dark);
+      color: white;
+      box-shadow: 0 3px 0 var(--primary-dark);
+      font-size: 1.2rem;
+    }
+
+    /* Pantalla de Resultados */
+    .results-header {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stars-row {
+      display: flex;
+      gap: 8px;
+      font-size: 2.8rem;
+      margin: 6px 0;
+    }
+
+    .star-icon {
+      color: #e2e8f0;
+      transition: transform 0.3s ease;
+    }
+    .star-icon.earned {
+      color: #fbbf24;
+      filter: drop-shadow(0 3px 4px rgba(245,158,11,0.35));
+    }
+
+    .score-pill {
+      background: #eff6ff;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 1.3rem;
+      padding: 8px 20px;
+      border-radius: 99px;
+      border: 2px solid #bfdbfe;
+    }
+
+    .review-list {
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+
+    .review-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+    .review-item.ok {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: var(--green-dark);
+    }
+    .review-item.fail {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--red);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Cabecera -->
+    <div class="header">
+      <div class="title">✏️ Mates 1.º</div>
+      <div class="stars-badge" title="Estrellas ganadas hoy">
+        ⭐ <span id="dailyStars">0</span>
+      </div>
+    </div>
+
+    <!-- PANTALLA 1: CONFIGURACIÓN -->
+    <div id="screenSetup" class="screen active">
+      <div>
+        <div class="section-label">1. Operación</div>
+        <div class="grid-options" id="optType">
+          <button class="opt-btn selected" data-val="sum">➕ Sumas</button>
+          <button class="opt-btn" data-val="sub">➖ Restas</button>
+          <button class="opt-btn" data-val="mix">🔀 Mezcla</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">2. Número de dígitos</div>
+        <div class="grid-options" id="optDigits">
+          <button class="opt-btn selected" data-val="1">1 Dígito</button>
+          <button class="opt-btn" data-val="2">2 Dígitos</button>
+          <button class="opt-btn" data-val="3">3 Dígitos</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">3. Dificultad (Llevadas)</div>
+        <div class="grid-options two-cols" id="optCarry">
+          <button class="opt-btn selected" data-val="no">🟢 Sin llevadas</button>
+          <button class="opt-btn" data-val="yes">🟠 Con llevadas</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">4. Cantidad de cuentas</div>
+        <div class="grid-options" id="optCount">
+          <button class="opt-btn selected" data-val="10">10</button>
+          <button class="opt-btn" data-val="15">15</button>
+          <button class="opt-btn" data-val="20">20</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">5. ¿Cuándo corregir?</div>
+        <div class="grid-options two-cols" id="optMode">
+          <button class="opt-btn selected" data-val="instant">⚡ Al momento</button>
+          <button class="opt-btn" data-val="end">📋 Al final</button>
+        </div>
+      </div>
+
+      <button class="start-btn" id="btnStart">¡Empezar a jugar! 🚀</button>
+    </div>
+
+    <!-- PANTALLA 2: JUEGO -->
+    <div id="screenGame" class="screen">
+      <div class="game-top">
+        <button class="back-btn" id="btnQuit">✖ Salir</button>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="counter-text" id="counterText">1 / 10</div>
+      </div>
+
+      <div class="notebook">
+        <div class="math-grid" id="mathGrid">
+          <!-- Generado dinámicamente -->
+        </div>
+        <div class="feedback-msg" id="feedbackMsg"></div>
+      </div>
+
+      <div class="keypad">
+        <button class="key-btn" data-key="1">1</button>
+        <button class="key-btn" data-key="2">2</button>
+        <button class="key-btn" data-key="3">3</button>
+        <button class="key-btn" data-key="4">4</button>
+        <button class="key-btn" data-key="5">5</button>
+        <button class="key-btn" data-key="6">6</button>
+        <button class="key-btn" data-key="7">7</button>
+        <button class="key-btn" data-key="8">8</button>
+        <button class="key-btn" data-key="9">9</button>
+        <button class="key-btn del-btn" data-key="DEL">⌫ Borrar</button>
+        <button class="key-btn" data-key="0">0</button>
+        <button class="key-btn ok-btn" data-key="OK">✔ Listo</button>
+      </div>
+    </div>
+
+    <!-- PANTALLA 3: RESULTADOS -->
+    <div id="screenResults" class="screen">
+      <div class="results-header">
+        <h2 id="resTitle" style="font-size: 1.6rem; font-weight: 900;">¡Muy bien hecho!</h2>
+        <div class="stars-row" id="starsRow">
+          <span class="star-icon">★</span>
+          <span class="star-icon">★</span>
+          <span class="star-icon">★</span>
+          <span class="star-icon">★</span>
+        </div>
+        <div class="score-pill" id="scorePill">10 / 10 aciertos</div>
+      </div>
+
+      <div>
+        <div class="section-label">Resumen de tus cuentas:</div>
+        <div class="review-list" id="reviewList"></div>
+      </div>
+
+      <button class="start-btn" id="btnRestart">🔄 Jugar otra partida</button>
+    </div>
+  </div>
+
+  <script>
+    /* --- SONIDOS SINTETIZADOS (Web Audio API - Cero archivos externos) --- */
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playTone(freq, type, duration, delay = 0) {
+      try {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + delay);
+        osc.stop(audioCtx.currentTime + delay + duration);
+      } catch (e) {}
+    }
+
+    function soundSuccess() {
+      playTone(523.25, 'sine', 0.12, 0);
+      playTone(659.25, 'sine', 0.18, 0.1);
+    }
+
+    function soundError() {
+      playTone(220, 'triangle', 0.2, 0);
+      playTone(180, 'triangle', 0.25, 0.15);
+    }
+
+    function soundFanfare() {
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => playTone(f, 'sine', 0.22, i * 0.12));
+    }
+
+    /* --- ESTADO Y CONFIGURACIÓN --- */
+    const config = {
+      type: 'sum',
+      digits: 1,
+      carry: 'no',
+      count: 10,
+      mode: 'instant'
+    };
+
+    let questions = [];
+    let currentIndex = 0;
+    let activeCol = 0; // Índice de la caja activa (empieza en Unidades = 3)
+    let userDigits = ['', '', '', '']; // [Millar, Centena, Decena, Unidad]
+    let carryMarks = [0, 0, 0, 0];
+    let locked = false;
+
+    /* --- ESTRELLAS DIARIAS EN MEMORIA LOCAL --- */
+    function getTodayKey() {
+      const d = new Date();
+      return `stars_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;
+    }
+
+    function loadDailyStars() {
+      const saved = parseInt(localStorage.getItem(getTodayKey()) || '0', 10);
+      document.getElementById('dailyStars').textContent = saved;
+    }
+
+    function addDailyStars(amount) {
+      const key = getTodayKey();
+      const current = parseInt(localStorage.getItem(key) || '0', 10);
+      const updated = current + amount;
+      localStorage.setItem(key, updated);
+      document.getElementById('dailyStars').textContent = updated;
+    }
+
+    loadDailyStars();
+
+    /* --- SELECTORES DE CONFIGURACIÓN --- */
+    function setupOptionGroup(groupId, configKey, isNumber = false) {
+      const container = document.getElementById(groupId);
+      const buttons = container.querySelectorAll('.opt-btn');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          const val = btn.getAttribute('data-val');
+          config[configKey] = isNumber ? parseInt(val, 10) : val;
+        });
+      });
+    }
+
+    setupOptionGroup('optType', 'type');
+    setupOptionGroup('optDigits', 'digits', true);
+    setupOptionGroup('optCarry', 'carry');
+    setupOptionGroup('optCount', 'count', true);
+    setupOptionGroup('optMode', 'mode');
+
+    /* --- GENERADOR DE OPERACIONES MATEMÁTICAS --- */
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateSingleQuestion(opType, digits, carryMode) {
+      const actualOp = opType === 'mix' ? (Math.random() < 0.5 ? 'sum' : 'sub') : opType;
+      let aDigits = [];
+      let bDigits = [];
+
+      if (carryMode === 'no') {
+        for (let i = 0; i < digits; i++) {
+          const isMostSig = (i === 0 && digits > 1);
+          if (actualOp === 'sum') {
+            const minA = isMostSig ? 1 : 0;
+            const minB = isMostSig ? 1 : 0;
+            const dA = randInt(minA, 8);
+            const dB = randInt(minB, 9 - dA);
+            aDigits.push(dA);
+            bDigits.push(dB);
+          } else {
+            const minA = isMostSig ? 2 : 1;
+            const minB = isMostSig ? 1 : 0;
+            const dA = randInt(minA, 9);
+            const dB = randInt(minB, dA);
+            aDigits.push(dA);
+            bDigits.push(dB);
+          }
+        }
+        const a = parseInt(aDigits.join(''), 10);
+        const b = parseInt(bDigits.join(''), 10);
+        return {
+          a,
+          b,
+          op: actualOp,
+          ans: actualOp === 'sum' ? a + b : a - b
+        };
+      } else {
+        // Con llevadas
+        const minVal = digits === 1 ? 2 : Math.pow(10, digits - 1);
+        const maxVal = Math.pow(10, digits) - 1;
+        for (let attempt = 0; attempt < 100; attempt++) {
+          let a = randInt(minVal, maxVal);
+          let b = randInt(minVal, maxVal);
+          if (actualOp === 'sub' && a < b) {
+            const tmp = a; a = b; b = tmp;
+          }
+          // Comprobar si tiene al menos una llevada
+          const strA = String(a).padStart(digits, '0');
+          const strB = String(b).padStart(digits, '0');
+          let hasCarry = false;
+          for (let i = digits - 1; i >= 0; i--) {
+            const da = parseInt(strA[i], 10);
+            const db = parseInt(strB[i], 10);
+            if (actualOp === 'sum' && (da + db >= 10)) hasCarry = true;
+            if (actualOp === 'sub' && (da < db)) hasCarry = true;
+          }
+          if (hasCarry || attempt === 99) {
+            return {
+              a,
+              b,
+              op: actualOp,
+              ans: actualOp === 'sum' ? a + b : a - b
+            };
+          }
+        }
+      }
+    }
+
+    function generateBatch() {
+      const list = [];
+      const seen = new Set();
+      for (let i = 0; i < config.count; i++) {
+        let q = null;
+        for (let tries = 0; tries < 25; tries++) {
+          q = generateSingleQuestion(config.type, config.digits, config.carry);
+          const key = `${q.a}${q.op}${q.b}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            break;
+          }
+        }
+        list.push({ ...q, userAns: null, isCorrect: false });
+      }
+      return list;
+    }
+
+    /* --- RENDERIZADO DE LA LIBRETA --- */
+    function getRequiredBoxes(q) {
+      const ansLen = String(q.ans).length;
+      return Math.max(config.digits, ansLen);
+    }
+
+    function renderCurrentQuestion() {
+      locked = false;
+      const q = questions[currentIndex];
+      const numBoxes = getRequiredBoxes(q);
+      userDigits = ['', '', '', ''];
+      carryMarks = [0, 0, 0, 0];
+      activeCol = 3; // Siempre empieza en las Unidades (derecha del todo)
+
+      document.getElementById('counterText').textContent = `${currentIndex + 1} / ${config.count}`;
+      document.getElementById('progressBar').style.width = `${(currentIndex / config.count) * 100}%`;
+      const fb = document.getElementById('feedbackMsg');
+      fb.textContent = '';
+      fb.style.color = '';
+
+      const grid = document.getElementById('mathGrid');
+      grid.innerHTML = '';
+
+      const strA = String(q.a).padStart(4, ' ');
+      const strB = String(q.b).padStart(4, ' ');
+      const headers = ['', 'C', 'D', 'U'];
+      const headerClasses = ['', 'col-c', 'col-d', 'col-u'];
+
+      // 1. Fila de cabeceras (C, D, U)
+      grid.appendChild(document.createElement('div'));
+      for (let c = 0; c < 4; c++) {
+        const h = document.createElement('div');
+        h.className = `col-header ${headerClasses[c]}`;
+        const minColToShow = 4 - Math.max(config.digits, numBoxes);
+        h.textContent = c >= minColToShow ? headers[c] : '';
+        grid.appendChild(h);
+      }
+
+      // 2. Fila de circulitos de llevadas (si están activadas)
+      if (config.carry === 'yes') {
+        grid.appendChild(document.createElement('div'));
+        for (let c = 0; c < 4; c++) {
+          const cell = document.createElement('div');
+          if (c >= 4 - config.digits && c < 3) {
+            const circle = document.createElement('div');
+            circle.className = 'carry-circle';
+            circle.textContent = '';
+            circle.addEventListener('click', () => {
+              carryMarks[c] = carryMarks[c] === 0 ? 1 : 0;
+              circle.textContent = carryMarks[c] ? '1' : '';
+              circle.classList.toggle('active', carryMarks[c] === 1);
+            });
+            cell.appendChild(circle);
+          }
+          grid.appendChild(cell);
+        }
+      }
+
+      // 3. Fila del primer número (A)
+      grid.appendChild(document.createElement('div'));
+      for (let c = 0; c < 4; c++) {
+        const d = document.createElement('div');
+        d.className = 'digit-cell';
+        d.textContent = strA[c] !== ' ' ? strA[c] : '';
+        grid.appendChild(d);
+      }
+
+      // 4. Fila del símbolo (+ / -) y segundo número (B)
+      const sym = document.createElement('div');
+      sym.className = 'op-symbol';
+      sym.textContent = q.op === 'sum' ? '+' : '−';
+      grid.appendChild(sym);
+
+      for (let c = 0; c < 4; c++) {
+        const d = document.createElement('div');
+        d.className = 'digit-cell';
+        d.textContent = strB[c] !== ' ' ? strB[c] : '';
+        grid.appendChild(d);
+      }
+
+      // 5. Línea divisoria
+      const line = document.createElement('div');
+      line.className = 'math-line';
+      grid.appendChild(line);
+
+      // 6. Cajas de respuesta
+      grid.appendChild(document.createElement('div'));
+      const firstBoxCol = 4 - numBoxes;
+      for (let c = 0; c < 4; c++) {
+        if (c >= firstBoxCol) {
+          const box = document.createElement('div');
+          box.className = 'ans-box' + (c === activeCol ? ' focused' : '');
+          box.id = `ansBox_${c}`;
+          box.addEventListener('click', () => {
+            if (locked) return;
+            activeCol = c;
+            updateBoxesUI();
+          });
+          grid.appendChild(box);
+        } else {
+          grid.appendChild(document.createElement('div'));
+        }
+      }
+    }
+
+    function updateBoxesUI() {
+      const q = questions[currentIndex];
+      const numBoxes = getRequiredBoxes(q);
+      const firstBoxCol = 4 - numBoxes;
+      for (let c = firstBoxCol; c < 4; c++) {
+        const box = document.getElementById(`ansBox_${c}`);
+        if (!box) continue;
+        box.textContent = userDigits[c];
+        box.classList.toggle('focused', !locked && c === activeCol);
+      }
+    }
+
+    /* --- ENTRADA DE TECLADO TÁCTIL Y FÍSICO --- */
+    function handleDigitInput(digitStr) {
+      if (locked) return;
+      const q = questions[currentIndex];
+      const numBoxes = getRequiredBoxes(q);
+      const firstBoxCol = 4 - numBoxes;
+
+      userDigits[activeCol] = digitStr;
+      // Mover el cursor automáticamente hacia la izquierda (de Unidades a Decenas, etc.)
+      if (activeCol > firstBoxCol) {
+        activeCol--;
+      }
+      updateBoxesUI();
+    }
+
+    function handleDelete() {
+      if (locked) return;
+      const q = questions[currentIndex];
+      const numBoxes = getRequiredBoxes(q);
+      const firstBoxCol = 4 - numBoxes;
+
+      if (userDigits[activeCol] !== '') {
+        userDigits[activeCol] = '';
+      } else if (activeCol < 3) {
+        activeCol++;
+        userDigits[activeCol] = '';
+      }
+      updateBoxesUI();
+    }
+
+    function submitCurrentAnswer() {
+      if (locked) return;
+      const q = questions[currentIndex];
+      const numBoxes = getRequiredBoxes(q);
+      const firstBoxCol = 4 - numBoxes;
+
+      const rawStr = userDigits.slice(firstBoxCol, 4).join('').trim();
+      if (rawStr === '') {
+        const fb = document.getElementById('feedbackMsg');
+        fb.style.color = 'var(--amber)';
+        fb.textContent = '👆 Escribe un número primero';
+        return;
+      }
+
+      const userVal = parseInt(rawStr, 10);
+      const isRight = (userVal === q.ans);
+      q.userAns = userVal;
+      q.isCorrect = isRight;
+
+      if (config.mode === 'instant') {
+        locked = true;
+        const fb = document.getElementById('feedbackMsg');
+        for (let c = firstBoxCol; c < 4; c++) {
+          const box = document.getElementById(`ansBox_${c}`);
+          if (box) {
+            box.classList.remove('focused');
+            box.classList.add(isRight ? 'correct' : 'wrong');
+          }
+        }
+        if (isRight) {
+          soundSuccess();
+          fb.style.color = 'var(--green)';
+          fb.textContent = '¡Genial! ¡Correcto! 🌟';
+        } else {
+          soundError();
+          fb.style.color = 'var(--red)';
+          fb.textContent = `Casi... Era ${q.ans}`;
+        }
+        setTimeout(() => {
+          nextOrFinish();
+        }, 1250);
+      } else {
+        // Modo corregir al final
+        playTone(440, 'sine', 0.08);
+        nextOrFinish();
+      }
+    }
+
+    function nextOrFinish() {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        renderCurrentQuestion();
+      } else {
+        showResultsScreen();
+      }
+    }
+
+    /* --- PANTALLA FINAL Y ESTRELLAS (1 a 4 Estrellas) --- */
+    function showResultsScreen() {
+      switchScreen('screenResults');
+      const correctCount = questions.filter(q => q.isCorrect).length;
+      const total = questions.length;
+      const ratio = correctCount / total;
+
+      let starsEarned = 1;
+      let titleText = '¡Sigue practicando! 💪';
+      if (ratio === 1) {
+        starsEarned = 4;
+        titleText = '¡PLENO PERFECTO! 🏆🌟';
+      } else if (ratio >= 0.8) {
+        starsEarned = 3;
+        titleText = '¡Súper bien hecho! 🎉';
+      } else if (ratio >= 0.5) {
+        starsEarned = 2;
+        titleText = '¡Buen trabajo! 👍';
+      }
+
+      addDailyStars(starsEarned);
+      soundFanfare();
+
+      document.getElementById('resTitle').textContent = titleText;
+      document.getElementById('scorePill').textContent = `${correctCount} de ${total} aciertos`;
+
+      const starIcons = document.querySelectorAll('#starsRow .star-icon');
+      starIcons.forEach((st, idx) => {
+        st.classList.remove('earned');
+        if (idx < starsEarned) {
+          setTimeout(() => st.classList.add('earned'), idx * 180);
+        }
+      });
+
+      const revList = document.getElementById('reviewList');
+      revList.innerHTML = '';
+      questions.forEach((q, idx) => {
+        const row = document.createElement('div');
+        row.className = `review-item ${q.isCorrect ? 'ok' : 'fail'}`;
+        const sym = q.op === 'sum' ? '+' : '−';
+        if (q.isCorrect) {
+          row.innerHTML = `<span>${idx + 1}) ${q.a} ${sym} ${q.b} = <strong>${q.ans}</strong></span> <span>✔ Bien</span>`;
+        } else {
+          row.innerHTML = `<span>${idx + 1}) ${q.a} ${sym} ${q.b} = <strong>${q.ans}</strong></span> <span>✖ Pusiste ${q.userAns}</span>`;
+        }
+        revList.appendChild(row);
+      });
+    }
+
+    /* --- NAVEGACIÓN Y EVENTOS --- */
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    document.getElementById('btnStart').addEventListener('click', () => {
+      questions = generateBatch();
+      currentIndex = 0;
+      switchScreen('screenGame');
+      renderCurrentQuestion();
+    });
+
+    document.getElementById('btnQuit').addEventListener('click', () => {
+      switchScreen('screenSetup');
+    });
+
+    document.getElementById('btnRestart').addEventListener('click', () => {
+      switchScreen('screenSetup');
+    });
+
+    document.querySelectorAll('.key-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.getAttribute('data-key');
+        if (key === 'DEL') handleDelete();
+        else if (key === 'OK') submitCurrentAnswer();
+        else handleDigitInput(key);
+      });
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (!document.getElementById('screenGame').classList.contains('active')) return;
+      if (e.key >= '0' && e.key <= '9') handleDigitInput(e.key);
+      else if (e.key === 'Backspace') handleDelete();
+      else if (e.key === 'Enter') submitCurrentAnswer();
+      else if (e.key === 'ArrowLeft' && activeCol > 0) { activeCol--; updateBoxesUI(); }
+      else if (e.key === 'ArrowRight' && activeCol < 3) { activeCol++; updateBoxesUI(); }
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
