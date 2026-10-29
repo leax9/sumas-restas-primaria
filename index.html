@@ -608,6 +608,10 @@
       color: var(--muted);
       text-transform: uppercase;
     }
+    
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
 
     @media print {
       body { background: white; padding: 0; }
@@ -893,7 +897,8 @@
         modalAvatarLbl: "Avatar:",
         modalCancel: "Cancelar",
         modalSave: "Guardar cambios",
-        appUpdated: "Aplicación actualizada"
+        appUpdated: "Aplicación actualizada",
+        checking: "Comprobando..."
       },
       ca: {
         appTitle: "Mates 1r",
@@ -946,7 +951,8 @@
         modalAvatarLbl: "Avatar:",
         modalCancel: "Cancel·lar",
         modalSave: "Desar canvis",
-        appUpdated: "Aplicació actualitzada"
+        appUpdated: "Aplicació actualitzada",
+        checking: "Comprovant..."
       },
       en: {
         appTitle: "Math 1st",
@@ -999,7 +1005,8 @@
         modalAvatarLbl: "Avatar:",
         modalCancel: "Cancel",
         modalSave: "Save changes",
-        appUpdated: "App updated"
+        appUpdated: "App updated",
+        checking: "Checking..."
       }
     };
 
@@ -1724,8 +1731,8 @@
       resetHoldDeleteButton();
 
       const avatars = ['🦁', '🦖', '🦄', '🚀', '🐼', '⭐', '🐯', '🦊'];
-      const avatarListContainer = document.getElementById('editAvatarList');
-      avatarListContainer.innerHTML = '';
+      const editAvatarListContainer = document.getElementById('editAvatarList');
+      editAvatarListContainer.innerHTML = '';
       
       profile.tempAvatar = profile.avatar;
 
@@ -1738,11 +1745,11 @@
         if (av === profile.tempAvatar) span.style.background = '#bfdbfe';
         
         span.addEventListener('click', () => {
-          Array.from(avatarListContainer.children).forEach(el => el.style.background = 'transparent');
+          Array.from(editAvatarListContainer.children).forEach(el => el.style.background = 'transparent');
           span.style.background = '#bfdbfe';
           profile.tempAvatar = av;
         });
-        avatarListContainer.appendChild(span);
+        editAvatarListContainer.appendChild(span);
       });
 
       document.getElementById('profileModal').style.display = 'flex';
@@ -1901,10 +1908,9 @@
             showUpdateUI(false);
           }
 
-          // COMPROBAR ACTUALIZACIONES EN SEGUNDO PLANO
           document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && navigator.onLine && !newWorker) {
-              reg.update().catch(() => { /* Falla silenciosamente si no hay internet real */ });
+              reg.update().catch(() => {});
             }
           });
         });
@@ -1946,22 +1952,67 @@
       } else {
         if (!newWorker) {
           container.innerHTML = `
-            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 20px; padding: 6px 14px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700; color: #166534;">
-              <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 2px rgba(34,197,94,0.2);"></span>
-              <span><span data-i18n="appUpdated">Aplicación actualizada</span> <strong id="appVersionDisplay"></strong></span>
+            <div id="btnCheckUpdate" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 20px; padding: 6px 14px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700; color: #166534; cursor: pointer; transition: transform 0.1s; user-select: none;" title="Comprobar actualizaciones">
+              <span id="updateDot" style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 2px rgba(34,197,94,0.2);"></span>
+              <span><span id="updateText" data-i18n="appUpdated">Aplicación actualizada</span> <strong id="appVersionDisplay"></strong></span>
             </div>
           `;
           
-          // Recuperar la versión exacta instalada por el Service Worker
           if ('caches' in window) {
             caches.keys().then(keys => {
               const cacheName = keys.find(k => k.includes('mates-primaria-v'));
               if (cacheName) {
-                const version = cacheName.split('-').pop(); // Extrae "v25"
+                const version = cacheName.split('-').pop(); 
                 const vDisplay = document.getElementById('appVersionDisplay');
                 if (vDisplay) vDisplay.textContent = '(' + version.toUpperCase() + ')';
               }
             });
+          }
+
+          const btnCheck = document.getElementById('btnCheckUpdate');
+          const dot = document.getElementById('updateDot');
+          const txt = document.getElementById('updateText');
+          
+          btnCheck.addEventListener('click', () => {
+            if (!navigator.onLine) return;
+            
+            dot.style.background = 'transparent';
+            dot.style.boxShadow = 'none';
+            dot.style.border = '2px solid #166534';
+            dot.style.borderTopColor = 'transparent';
+            dot.style.width = '12px';
+            dot.style.height = '12px';
+            dot.style.animation = 'spin 0.8s linear infinite';
+            
+            txt.removeAttribute('data-i18n');
+            txt.textContent = i18n[currentLang].checking || "Comprobando...";
+            btnCheck.style.pointerEvents = 'none'; 
+            
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.ready.then(reg => {
+                reg.update().then(() => {
+                  setTimeout(() => {
+                     if (!newWorker && document.getElementById('btnCheckUpdate')) {
+                        resetCheckBtn(btnCheck, dot, txt);
+                     }
+                  }, 1200);
+                }).catch(() => {
+                   setTimeout(() => resetCheckBtn(btnCheck, dot, txt), 800);
+                });
+              });
+            }
+          });
+
+          function resetCheckBtn(btn, dot, txt) {
+             dot.style.animation = 'none';
+             dot.style.border = 'none';
+             dot.style.width = '8px';
+             dot.style.height = '8px';
+             dot.style.background = '#22c55e';
+             dot.style.boxShadow = '0 0 0 2px rgba(34,197,94,0.2)';
+             txt.setAttribute('data-i18n', 'appUpdated');
+             txt.textContent = i18n[currentLang].appUpdated;
+             btn.style.pointerEvents = 'auto';
           }
         }
       }
