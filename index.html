@@ -518,6 +518,12 @@
       filter: drop-shadow(0 3px 4px rgba(245,158,11,0.35));
     }
 
+    .score-pill-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
     .score-pill {
       background: #eff6ff;
       color: var(--primary);
@@ -782,7 +788,10 @@
           <span class="star-icon">★</span>
           <span class="star-icon">★</span>
         </div>
-        <div class="score-pill" id="scorePill">10 / 10 aciertos</div>
+        <div class="score-pill-container">
+          <div class="score-pill" id="scorePill">10 / 10 aciertos</div>
+          <div class="score-pill" id="timePill" style="background: #fffbeb; color: #b45309; border-color: #fde68a;">⏱ 0:00</div>
+        </div>
       </div>
 
       <div>
@@ -1111,7 +1120,7 @@
     });
 
     /* --- MOTOR PREVENTIVO: HISTORIAL Y COMPRESIÓN MENSUAL --- */
-    function recordSessionStats(correctCount, total, stars) {
+    function recordSessionStats(correctCount, total, stars, durationMs) {
       const profiles = getProfiles();
       const p = profiles.find(pr => pr.id === currentProfileId);
       if (!p) return;
@@ -1125,7 +1134,8 @@
         dateStr: now.toLocaleDateString(),
         correct: correctCount,
         total: total,
-        stars: stars
+        stars: stars,
+        duration: durationMs // Guardamos el tiempo oculto
       };
 
       p.history.push(sessionRecord);
@@ -1205,6 +1215,15 @@
     function soundError() { playTone(220, 'triangle', 0.2, 0); playTone(180, 'triangle', 0.25, 0.15); }
     function soundFanfare() { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => playTone(f, 'sine', 0.22, i * 0.12)); }
 
+    /* --- FORMATO TIEMPO --- */
+    function formatTime(ms) {
+      if (!ms) return "--:--";
+      const totalSecs = Math.floor(ms / 1000);
+      const m = Math.floor(totalSecs / 60);
+      const s = totalSecs % 60;
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
     /* --- ESTADO DEL JUEGO --- */
     const config = { type: 'sum', digits: 1, carry: 'no', count: 10, mode: 'instant' };
     let questions = [];
@@ -1213,6 +1232,7 @@
     let userDigits = ['', '', '', ''];
     let carryMarks = [0, 0, 0, 0];
     let locked = false;
+    let sessionStartTime = 0; // Variable para el cronómetro ciego
 
     function getTodayKey() {
       const d = new Date();
@@ -1293,7 +1313,6 @@
       }
     }
 
-    // ALGORITMO MEJORADO: Evita repeticiones exactas y resultados consecutivos iguales
     function generateBatch() {
       const list = [];
       const seen = new Set();
@@ -1507,6 +1526,11 @@
 
     function showResultsScreen() {
       switchScreen('screenResults');
+      
+      // Cálculo del cronómetro oculto
+      const sessionDurationMs = Date.now() - sessionStartTime;
+      document.getElementById('timePill').textContent = `⏱ ${formatTime(sessionDurationMs)}`;
+
       const correctCount = questions.filter(q => q.isCorrect).length;
       const total = questions.length;
       const ratio = correctCount / total;
@@ -1518,7 +1542,7 @@
       else if (ratio >= 0.5) { starsEarned = 2; titleText = i18n[currentLang].titleGood; }
 
       addDailyStars(starsEarned);
-      recordSessionStats(correctCount, total, starsEarned);
+      recordSessionStats(correctCount, total, starsEarned, sessionDurationMs); // Guardamos la duración
       soundFanfare();
 
       document.getElementById('resTitle').textContent = titleText;
@@ -1565,7 +1589,11 @@
       data.logs.forEach(item => {
         const row = document.createElement('div');
         row.className = 'review-item ok';
-        row.innerHTML = `<span>📅 ${item.dateStr}</span> <span>⭐ ${item.stars} | 🎯 ${item.correct}/${item.total}</span>`;
+        
+        // Formateamos el tiempo para el log, y lo ocultamos si es un registro antiguo que no lo tenía
+        const timeStr = item.duration ? ` | ⏱ ${formatTime(item.duration)}` : '';
+        
+        row.innerHTML = `<span>📅 ${item.dateStr}</span> <span>⭐ ${item.stars} | 🎯 ${item.correct}/${item.total}${timeStr}</span>`;
         logList.appendChild(row);
       });
     }
@@ -1592,6 +1620,7 @@
     document.getElementById('btnStart').addEventListener('click', () => {
       questions = generateBatch();
       currentIndex = 0;
+      sessionStartTime = Date.now(); // Iniciamos el cronómetro secreto aquí
       switchScreen('screenGame');
       renderCurrentQuestion();
     });
