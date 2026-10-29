@@ -831,7 +831,7 @@
   </div>
 
   <script>
-    /* --- TRADUCCIONES TRILINGÜES COMPLETAS --- */
+    /* --- TRADUCCIONES TRILINGÜES (ES, CA, EN) --- */
     const i18n = {
       es: {
         appTitle: "Mates 1.º",
@@ -1326,7 +1326,6 @@
       const grid = document.getElementById('mathGrid');
       grid.innerHTML = '';
 
-      // CORREGIDO: Forzar al menos mostrar C, D, U si hay llevadas (incluso en 1 dígito) para que aparezca el círculo de llevadas
       const effectiveGridDigits = (config.digits === 1 && config.carry === 'yes') ? 2 : config.digits;
       const maxColSpan = Math.max(effectiveGridDigits, numBoxes);
 
@@ -1348,7 +1347,8 @@
         grid.appendChild(document.createElement('div'));
         for (let c = 0; c < 4; c++) {
           const cell = document.createElement('div');
-          if (c >= 4 - maxColSpan && c < 3) {
+          // Solo se añade el círculo visual si es una SUMA. Si es resta queda el espacio vacío.
+          if (q.op === 'sum' && c >= 4 - maxColSpan && c < 3) {
             const circle = document.createElement('div');
             circle.className = 'carry-circle';
             circle.addEventListener('click', () => {
@@ -1601,7 +1601,6 @@
     let holdTimer = null;
     let holdStartTime = null;
 
-    // Diccionario de traducciones trilingüe para la modal
     const profileModalTranslations = {
       es: {
         editTitle: "Editar Perfil",
