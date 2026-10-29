@@ -293,7 +293,52 @@
       transform: scale(1.15);
     }
 
-    /* Juego */
+    /* Tarjeta de Minijuego */
+    .minigame-card {
+      background: #fffbeb;
+      border: 2px dashed #f59e0b;
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .minigame-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .minigame-title {
+      font-weight: 800;
+      color: #b45309;
+      font-size: 1rem;
+    }
+    .minigame-sub {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .minigame-btn {
+      background: #f59e0b;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #b45309;
+      white-space: nowrap;
+    }
+    .minigame-btn:disabled {
+      background: #cbd5e1;
+      box-shadow: 0 3px 0 #94a3b8;
+      cursor: not-allowed;
+      color: #64748b;
+    }
+
+    /* Juego de Mates */
     .game-top {
       display: flex;
       justify-content: space-between;
@@ -613,9 +658,69 @@
       100% { transform: rotate(360deg); }
     }
 
+    /* PANTALLA MINIJUEGO BASKET */
+    .court-area {
+      position: relative;
+      background: #f8fafc;
+      border: 3px solid #cbd5e1;
+      border-radius: 18px;
+      height: 280px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .basket-hoop {
+      font-size: 3.5rem;
+      z-index: 1;
+      transition: transform 0.2s;
+    }
+
+    .ball {
+      font-size: 3rem;
+      z-index: 2;
+      transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .meter-container {
+      width: 100%;
+      height: 24px;
+      background: #e2e8f0;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #cbd5e1;
+    }
+
+    .meter-target {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 40%;
+      width: 20%;
+      background: #22c55e;
+    }
+
+    .meter-cursor {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      background: #dc2626;
+      border-radius: 4px;
+      left: 0%;
+    }
+
     @media print {
       body { background: white; padding: 0; }
-      .header, .keypad, .start-btn, .back-btn, .stats-tabs, #screenSetup, #screenGame { display: none !important; }
+      .header, .keypad, .start-btn, .back-btn, .stats-tabs, #screenSetup, #screenGame, #screenBasket { display: none !important; }
       #screenStats { display: flex !important; border: none; box-shadow: none; padding: 0; }
       .app-container { max-width: 100%; }
     }
@@ -639,7 +744,7 @@
           <option value="ca">🏴 CA</option>
           <option value="en">🇬🇧 EN</option>
         </select>
-        <div class="stars-badge" title="Estrellas ganadas hoy">
+        <div class="stars-badge" title="Tus estrellas disponibles">
           ⭐ <span id="dailyStars">0</span>
         </div>
       </div>
@@ -676,9 +781,7 @@
           <input type="text" id="editProfileName" class="profile-input" style="padding: 10px; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 1rem; width: 100%; box-sizing: border-box;">
           
           <label style="font-size: 0.9rem; font-weight: 700;" data-i18n="modalAvatarLbl">Avatar:</label>
-          <div id="editAvatarList" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: 1.8rem; cursor: pointer; padding: 4px;">
-            <!-- Se rellena por JS -->
-          </div>
+          <div id="editAvatarList" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: 1.8rem; cursor: pointer; padding: 4px;"></div>
         </div>
     
         <!-- Sección de Borrado Seguro -->
@@ -705,6 +808,15 @@
 
     <!-- PANTALLA 1: CONFIGURACIÓN -->
     <div id="screenSetup" class="screen">
+      <!-- Tarjeta Recompensa Minijuego -->
+      <div class="minigame-card">
+        <div class="minigame-info">
+          <span class="minigame-title">🏀 <span data-i18n="mgBasketTitle">Tiros a Canasta</span></span>
+          <span class="minigame-sub" id="mgDailyLimitText">Máx. 2 al día | Coste: 8 ⭐</span>
+        </div>
+        <button class="minigame-btn" id="btnPlayBasket">Jugar (8 ⭐)</button>
+      </div>
+
       <div>
         <div class="section-label" data-i18n="lblOp">1. Operación</div>
         <div class="grid-options" id="optType">
@@ -751,7 +863,7 @@
       <button class="start-btn" id="btnStart" data-i18n="btnStart">¡Empezar a jugar! 🚀</button>
     </div>
 
-    <!-- PANTALLA 2: JUEGO -->
+    <!-- PANTALLA 2: JUEGO DE MATES -->
     <div id="screenGame" class="screen">
       <div class="game-top">
         <button class="back-btn" id="btnQuit" data-i18n="btnQuit">✖ Salir</button>
@@ -841,6 +953,30 @@
 
       <button class="start-btn" id="btnPrintPDF" style="background: var(--primary); box-shadow: 0 5px 0 var(--primary-dark);" data-i18n="btnPDF">🖨️ Guardar Informe PDF</button>
     </div>
+
+    <!-- PANTALLA 5: MINIJUEGO DE BALONCESTO -->
+    <div id="screenBasket" class="screen">
+      <div class="game-top">
+        <button class="back-btn" id="btnQuitBasket" data-i18n="btnQuit">✖ Salir</button>
+        <div class="counter-text" id="basketCounterText">Tiro 1 / 3</div>
+        <div class="stars-badge" id="basketScoreBadge">🏀 0</div>
+      </div>
+
+      <div class="court-area">
+        <div class="basket-hoop" id="basketHoop">🗑️</div>
+        <div class="ball" id="basketBall">🏀</div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="meter-container">
+          <div class="meter-target"></div>
+          <div class="meter-cursor" id="meterCursor"></div>
+        </div>
+        <button class="start-btn" id="btnShootBasket" style="background:#f59e0b; box-shadow:0 5px 0 #b45309;">¡TIRAR! 🏀</button>
+      </div>
+
+      <div class="feedback-msg" id="basketFeedback"></div>
+    </div>
   </div>
 
   <script>
@@ -898,7 +1034,14 @@
         modalCancel: "Cancelar",
         modalSave: "Guardar cambios",
         appUpdated: "Aplicación actualizada",
-        checking: "Comprobando..."
+        checking: "Comprobando...",
+        mgBasketTitle: "Tiros a Canasta",
+        mgLimitReached: "¡Cupo de hoy listo! Mañana más 🏀",
+        mgNeedStars: "Te faltan estrellas (8 ⭐)",
+        mgBasketShot: "Tiro",
+        mgBasketHit: "¡CANASTA! 🌟🏀",
+        mgBasketMiss: "¡Rebote! Casi... 💨",
+        mgBasketDone: "¡Partida finalizada! Canastas:"
       },
       ca: {
         appTitle: "Mates 1r",
@@ -952,7 +1095,14 @@
         modalCancel: "Cancel·lar",
         modalSave: "Desar canvis",
         appUpdated: "Aplicació actualitzada",
-        checking: "Comprovant..."
+        checking: "Comprovant...",
+        mgBasketTitle: "Tirs a Canastra",
+        mgLimitReached: "Límit d'avui assolit! Demà més 🏀",
+        mgNeedStars: "Et falten estrelles (8 ⭐)",
+        mgBasketShot: "Tir",
+        mgBasketHit: "CANASTRA! 🌟🏀",
+        mgBasketMiss: "Rebot! Gairebé... 💨",
+        mgBasketDone: "Partida acabada! Canastres:"
       },
       en: {
         appTitle: "Math 1st",
@@ -1006,7 +1156,14 @@
         modalCancel: "Cancel",
         modalSave: "Save changes",
         appUpdated: "App updated",
-        checking: "Checking..."
+        checking: "Checking...",
+        mgBasketTitle: "Free Throws",
+        mgLimitReached: "Today's limit reached! More tomorrow 🏀",
+        mgNeedStars: "Need more stars (8 ⭐)",
+        mgBasketShot: "Shot",
+        mgBasketHit: "SWISH! 🌟🏀",
+        mgBasketMiss: "Rim out! Almost... 💨",
+        mgBasketDone: "Game over! Baskets:"
       }
     };
 
@@ -1026,6 +1183,7 @@
         const key = el.getAttribute('data-i18n-placeholder');
         if (i18n[lang][key]) el.placeholder = i18n[lang][key];
       });
+      updateBasketCardUI();
     }
 
     document.getElementById('langSelect').addEventListener('change', (e) => setLanguage(e.target.value));
@@ -1095,7 +1253,8 @@
       }
       document.getElementById('headerAvatar').textContent = p.avatar;
       document.getElementById('headerName').textContent = p.name;
-      loadDailyStars();
+      loadSpendableStars();
+      updateBasketCardUI();
     }
 
     let selectedAvatar = '🦁';
@@ -1113,7 +1272,15 @@
       if (!name) return;
 
       const profiles = getProfiles();
-      const newProf = { id: 'prof_' + Date.now(), name, avatar: selectedAvatar, history: [], compressedMonths: {} };
+      const newProf = { 
+        id: 'prof_' + Date.now(), 
+        name, 
+        avatar: selectedAvatar, 
+        history: [], 
+        compressedMonths: {},
+        spendableStars: 0,
+        basketPlays: { date: '', count: 0 }
+      };
       profiles.push(newProf);
       saveProfiles(profiles);
 
@@ -1128,6 +1295,37 @@
       renderProfilesScreen();
       switchScreen('screenProfiles');
     });
+
+    /* --- GESTIÓN DE ESTRELLAS GASTABLES (MONEDERO) --- */
+    function getSpendableStars() {
+      const p = getCurrentProfile();
+      return p && p.spendableStars ? p.spendableStars : 0;
+    }
+
+    function loadSpendableStars() {
+      document.getElementById('dailyStars').textContent = getSpendableStars();
+    }
+
+    function addSpendableStars(amount) {
+      const profiles = getProfiles();
+      const p = profiles.find(item => item.id === currentProfileId);
+      if (!p) return;
+      p.spendableStars = (p.spendableStars || 0) + amount;
+      saveProfiles(profiles);
+      loadSpendableStars();
+      updateBasketCardUI();
+    }
+
+    function deductSpendableStars(amount) {
+      const profiles = getProfiles();
+      const p = profiles.find(item => item.id === currentProfileId);
+      if (!p || (p.spendableStars || 0) < amount) return false;
+      p.spendableStars -= amount;
+      saveProfiles(profiles);
+      loadSpendableStars();
+      updateBasketCardUI();
+      return true;
+    }
 
     /* --- MOTOR PREVENTIVO: HISTORIAL Y COMPRESIÓN MENSUAL --- */
     function recordSessionStats(correctCount, total, stars, durationMs) {
@@ -1224,6 +1422,8 @@
     function soundSuccess() { playTone(523.25, 'sine', 0.12, 0); playTone(659.25, 'sine', 0.18, 0.1); }
     function soundError() { playTone(220, 'triangle', 0.2, 0); playTone(180, 'triangle', 0.25, 0.15); }
     function soundFanfare() { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => playTone(f, 'sine', 0.22, i * 0.12)); }
+    function soundSwish() { playTone(880, 'sine', 0.1, 0); playTone(1174, 'sine', 0.2, 0.08); }
+    function soundRim() { playTone(160, 'square', 0.15, 0); }
 
     /* --- FORMATO TIEMPO --- */
     function formatTime(ms) {
@@ -1234,7 +1434,7 @@
       return `${m}:${s.toString().padStart(2, '0')}`;
     }
 
-    /* --- ESTADO DEL JUEGO --- */
+    /* --- ESTADO DEL JUEGO DE MATES --- */
     const config = { type: 'sum', digits: 1, carry: 'no', count: 10, mode: 'instant' };
     let questions = [];
     let currentIndex = 0;
@@ -1243,23 +1443,6 @@
     let carryMarks = [0, 0, 0, 0];
     let locked = false;
     let sessionStartTime = 0; 
-
-    function getTodayKey() {
-      const d = new Date();
-      return `stars_${currentProfileId}_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;
-    }
-    function loadDailyStars() {
-      if (!currentProfileId) return;
-      const saved = parseInt(localStorage.getItem(getTodayKey()) || '0', 10);
-      document.getElementById('dailyStars').textContent = saved;
-    }
-    function addDailyStars(amount) {
-      const key = getTodayKey();
-      const current = parseInt(localStorage.getItem(key) || '0', 10);
-      const updated = current + amount;
-      localStorage.setItem(key, updated);
-      document.getElementById('dailyStars').textContent = updated;
-    }
 
     /* --- CONFIGURADOR DE OPCIONES --- */
     function setupOptionGroup(groupId, configKey, isNumber = false) {
@@ -1280,7 +1463,7 @@
     setupOptionGroup('optCount', 'count', true);
     setupOptionGroup('optMode', 'mode');
 
-    /* --- GENERADOR DE MATEMÁTICAS --- */
+    /* --- GENERADOR DE MATEMÁTICAS ANTI-REPETICIÓN --- */
     function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
     function generateSingleQuestion(opType, digits, carryMode) {
@@ -1383,7 +1566,6 @@
       const headers = ['', 'C', 'D', 'U'];
       const headerClasses = ['', 'col-c', 'col-d', 'col-u'];
 
-      // Fila 1: Cabeceras
       grid.appendChild(document.createElement('div'));
       for (let c = 0; c < 4; c++) {
         const h = document.createElement('div');
@@ -1393,7 +1575,6 @@
         grid.appendChild(h);
       }
 
-      // Fila 2: Llevadas (Redonditas)
       if (config.carry === 'yes') {
         grid.appendChild(document.createElement('div'));
         for (let c = 0; c < 4; c++) {
@@ -1416,7 +1597,6 @@
         }
       }
 
-      // Fila 3: Operando A
       grid.appendChild(document.createElement('div'));
       for (let c = 0; c < 4; c++) {
         const d = document.createElement('div');
@@ -1425,7 +1605,6 @@
         grid.appendChild(d);
       }
 
-      // Fila 4: Símbolo + Operando B
       const sym = document.createElement('div');
       sym.className = 'op-symbol';
       sym.textContent = q.op === 'sum' ? '+' : '−';
@@ -1438,12 +1617,10 @@
         grid.appendChild(d);
       }
 
-      // Fila 5: Línea de separación
       const line = document.createElement('div');
       line.className = 'math-line';
       grid.appendChild(line);
 
-      // Fila 6: Cajas de respuesta
       grid.appendChild(document.createElement('div'));
       const firstBoxCol = 4 - numBoxes;
       for (let c = 0; c < 4; c++) {
@@ -1550,7 +1727,7 @@
       else if (ratio >= 0.8) { starsEarned = 3; titleText = i18n[currentLang].titleGreat; }
       else if (ratio >= 0.5) { starsEarned = 2; titleText = i18n[currentLang].titleGood; }
 
-      addDailyStars(starsEarned);
+      addSpendableStars(starsEarned); // Suma al monedero gastable
       recordSessionStats(correctCount, total, starsEarned, sessionDurationMs);
       soundFanfare();
 
@@ -1578,6 +1755,173 @@
       });
     }
 
+    /* --- LÓGICA MINIJUEGO DE BALONCESTO --- */
+    function getTodayDateStr() {
+      const d = new Date();
+      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    }
+
+    function getTodayBasketPlays() {
+      const p = getCurrentProfile();
+      if (!p) return 0;
+      const today = getTodayDateStr();
+      if (!p.basketPlays || p.basketPlays.date !== today) {
+        return 0;
+      }
+      return p.basketPlays.count || 0;
+    }
+
+    function recordBasketPlay() {
+      const profiles = getProfiles();
+      const p = profiles.find(item => item.id === currentProfileId);
+      if (!p) return;
+      const today = getTodayDateStr();
+      if (!p.basketPlays || p.basketPlays.date !== today) {
+        p.basketPlays = { date: today, count: 1 };
+      } else {
+        p.basketPlays.count += 1;
+      }
+      saveProfiles(profiles);
+      updateBasketCardUI();
+    }
+
+    function updateBasketCardUI() {
+      const btn = document.getElementById('btnPlayBasket');
+      const infoText = document.getElementById('mgDailyLimitText');
+      if (!btn || !infoText) return;
+
+      const plays = getTodayBasketPlays();
+      const stars = getSpendableStars();
+
+      if (plays >= 2) {
+        btn.disabled = true;
+        btn.textContent = "🔒 0/2";
+        infoText.textContent = i18n[currentLang].mgLimitReached;
+      } else if (stars < 8) {
+        btn.disabled = true;
+        btn.textContent = "Jugar (8 ⭐)";
+        infoText.textContent = `${i18n[currentLang].mgNeedStars} | Hoy: ${plays}/2`;
+      } else {
+        btn.disabled = false;
+        btn.textContent = "Jugar (8 ⭐)";
+        infoText.textContent = `Hoy llevas ${plays}/2 partidas | Coste: 8 ⭐`;
+      }
+    }
+
+    let basketShotsLeft = 3;
+    let basketScore = 0;
+    let meterPos = 0;
+    let meterDir = 1;
+    let meterInterval = null;
+    let meterSpeed = 2.2;
+    let shootingLocked = false;
+
+    function startBasketMinigame() {
+      if (!deductSpendableStars(8)) return;
+      recordBasketPlay();
+
+      basketShotsLeft = 3;
+      basketScore = 0;
+      shootingLocked = false;
+      document.getElementById('basketScoreBadge').textContent = `🏀 ${basketScore}`;
+      document.getElementById('basketFeedback').textContent = '';
+      updateBasketShotCounter();
+      resetBallPosition();
+
+      switchScreen('screenBasket');
+      startMeter();
+    }
+
+    function updateBasketShotCounter() {
+      const currentShot = 4 - basketShotsLeft;
+      document.getElementById('basketCounterText').textContent = `${i18n[currentLang].mgBasketShot} ${currentShot} / 3`;
+    }
+
+    function startMeter() {
+      clearInterval(meterInterval);
+      meterPos = 0;
+      meterDir = 1;
+      meterInterval = setInterval(() => {
+        meterPos += meterDir * meterSpeed;
+        if (meterPos >= 96) meterDir = -1;
+        if (meterPos <= 0) meterDir = 1;
+        const cursor = document.getElementById('meterCursor');
+        if (cursor) cursor.style.left = `${meterPos}%`;
+      }, 16);
+    }
+
+    function resetBallPosition() {
+      const ball = document.getElementById('basketBall');
+      ball.style.transition = 'none';
+      ball.style.bottom = '20px';
+      ball.style.left = '50%';
+      ball.style.transform = 'translateX(-50%) scale(1)';
+    }
+
+    document.getElementById('btnPlayBasket').addEventListener('click', startBasketMinigame);
+    document.getElementById('btnQuitBasket').addEventListener('click', () => {
+      clearInterval(meterInterval);
+      switchScreen('screenSetup');
+    });
+
+    document.getElementById('btnShootBasket').addEventListener('click', () => {
+      if (shootingLocked || basketShotsLeft <= 0) return;
+      shootingLocked = true;
+      clearInterval(meterInterval);
+
+      // Zona diana verde: entre el 40% y el 60%
+      const hit = meterPos >= 38 && meterPos <= 62;
+      const ball = document.getElementById('basketBall');
+      const hoop = document.getElementById('basketHoop');
+      const fb = document.getElementById('basketFeedback');
+
+      ball.style.transition = 'all 0.6s cubic-bezier(0.2, 0.8, 0.3, 1)';
+
+      if (hit) {
+        ball.style.bottom = '180px';
+        ball.style.transform = 'translateX(-50%) scale(0.7)';
+        setTimeout(() => {
+          soundSwish();
+          basketScore++;
+          document.getElementById('basketScoreBadge').textContent = `🏀 ${basketScore}`;
+          fb.style.color = 'var(--green)';
+          fb.textContent = i18n[currentLang].mgBasketHit;
+          hoop.style.transform = 'scale(1.25)';
+          setTimeout(() => hoop.style.transform = 'scale(1)', 200);
+        }, 500);
+      } else {
+        const offset = meterPos < 38 ? '-110%' : '10%';
+        ball.style.bottom = '160px';
+        ball.style.transform = `translateX(${offset}) scale(0.7)`;
+        setTimeout(() => {
+          soundRim();
+          fb.style.color = 'var(--red)';
+          fb.textContent = i18n[currentLang].mgBasketMiss;
+        }, 500);
+      }
+
+      setTimeout(() => {
+        basketShotsLeft--;
+        if (basketShotsLeft > 0) {
+          updateBasketShotCounter();
+          resetBallPosition();
+          setTimeout(() => {
+            fb.textContent = '';
+            shootingLocked = false;
+            startMeter();
+          }, 300);
+        } else {
+          soundFanfare();
+          fb.style.color = 'var(--primary)';
+          fb.textContent = `${i18n[currentLang].mgBasketDone} ${basketScore} / 3 ⭐`;
+          setTimeout(() => {
+            switchScreen('screenSetup');
+            updateBasketCardUI();
+          }, 2400);
+        }
+      }, 1200);
+    });
+
     /* --- ESTADÍSTICAS --- */
     let currentStatsPeriod = 'week';
 
@@ -1598,9 +1942,7 @@
       data.logs.forEach(item => {
         const row = document.createElement('div');
         row.className = 'review-item ok';
-        
         const timeStr = item.duration ? ` | ⏱ ${formatTime(item.duration)}` : '';
-        
         row.innerHTML = `<span>📅 ${item.dateStr}</span> <span>⭐ ${item.stars} | 🎯 ${item.correct}/${item.total}${timeStr}</span>`;
         logList.appendChild(row);
       });
