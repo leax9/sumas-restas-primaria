@@ -101,6 +101,7 @@
       font-weight: 800;
       color: var(--primary);
       white-space: nowrap;
+      cursor: pointer; /* Indica que se puede pulsar para el modo dios */
     }
 
     .header-badges {
@@ -759,7 +760,7 @@
         <div class="profile-pill" id="currentProfileBtn" title="Cambiar perfil">
           <span id="headerAvatar">🦁</span> <span id="headerName">Perfil</span>
         </div>
-        <div class="title">✏️ <span data-i18n="appTitle">Mates 1.º</span></div>
+        <div class="title" id="adminSecretTrigger">✏️ <span data-i18n="appTitle">Mates 1.º</span></div>
       </div>
       <div class="header-badges">
         <button class="icon-btn" id="btnToggleSound" title="Activar/Desactivar Sonido">🔊</button>
@@ -1358,6 +1359,32 @@
       switchScreen('screenProfiles');
     });
 
+    /* --- MODO DIOS / ADMIN SECRETO (TRIPLE CLIC EN TÍTULO) --- */
+    let adminClicks = 0;
+    let adminTimer = null;
+    document.getElementById('adminSecretTrigger').addEventListener('click', () => {
+      adminClicks++;
+      clearTimeout(adminTimer);
+      if (adminClicks === 3) {
+        adminClicks = 0;
+        const profiles = getProfiles();
+        const p = profiles.find(item => item.id === currentProfileId);
+        if (p) {
+          p.spendableStars = (p.spendableStars || 0) + 50;
+          const today = getTodayDateStr();
+          p.dailyProblems = { date: today, count: 10 }; // Desbloquea el minijuego al instante
+          p.basketPlays = { date: today, count: 0 }; // Resetea las partidas a 0
+          saveProfiles(profiles);
+          loadProfileData();
+          alert("👑 MODO ADMIN ACTIVADO: +50 ⭐ y Minijuego Desbloqueado para pruebas.");
+        } else {
+          alert("Selecciona un perfil primero para usar el Modo Admin.");
+        }
+      } else {
+        adminTimer = setTimeout(() => { adminClicks = 0; }, 600);
+      }
+    });
+
     /* --- GESTIÓN DE ESTRELLAS GASTABLES Y PASE DIARIO --- */
     function getTodayDateStr() {
       const d = new Date();
@@ -1920,7 +1947,7 @@
 
     /* --- LÓGICA MINIJUEGO DE BALONCESTO (8 TIROS, 3 ESTRELLAS) --- */
     function startBasketMinigame() {
-      if (!deductSpendableStars(3)) return; // Coste ajustado a 3 estrellas
+      if (!deductSpendableStars(3)) return; 
       recordBasketPlay();
 
       basketShotsLeft = 8;
@@ -1944,7 +1971,6 @@
       clearInterval(meterInterval);
       meterPos = 0;
       meterDir = 1;
-      // Velocidad suave de 1.2 para niños pequeños
       meterInterval = setInterval(() => {
         meterPos += meterDir * 1.2;
         if (meterPos >= 96) meterDir = -1;
@@ -1980,7 +2006,6 @@
       shootingLocked = true;
       clearInterval(meterInterval);
 
-      // Zona verde holgada (32% a 68%) para asegurar que puedan encestar sin frustrarse
       const hit = meterPos >= 32 && meterPos <= 68;
       const ball = document.getElementById('basketBall');
       const hoop = document.getElementById('basketHoop');
