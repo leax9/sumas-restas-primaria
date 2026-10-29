@@ -1135,7 +1135,7 @@
         correct: correctCount,
         total: total,
         stars: stars,
-        duration: durationMs // Guardamos el tiempo oculto
+        duration: durationMs 
       };
 
       p.history.push(sessionRecord);
@@ -1232,7 +1232,7 @@
     let userDigits = ['', '', '', ''];
     let carryMarks = [0, 0, 0, 0];
     let locked = false;
-    let sessionStartTime = 0; // Variable para el cronómetro ciego
+    let sessionStartTime = 0; 
 
     function getTodayKey() {
       const d = new Date();
@@ -1527,7 +1527,6 @@
     function showResultsScreen() {
       switchScreen('screenResults');
       
-      // Cálculo del cronómetro oculto
       const sessionDurationMs = Date.now() - sessionStartTime;
       document.getElementById('timePill').textContent = `⏱ ${formatTime(sessionDurationMs)}`;
 
@@ -1542,7 +1541,7 @@
       else if (ratio >= 0.5) { starsEarned = 2; titleText = i18n[currentLang].titleGood; }
 
       addDailyStars(starsEarned);
-      recordSessionStats(correctCount, total, starsEarned, sessionDurationMs); // Guardamos la duración
+      recordSessionStats(correctCount, total, starsEarned, sessionDurationMs);
       soundFanfare();
 
       document.getElementById('resTitle').textContent = titleText;
@@ -1590,7 +1589,6 @@
         const row = document.createElement('div');
         row.className = 'review-item ok';
         
-        // Formateamos el tiempo para el log, y lo ocultamos si es un registro antiguo que no lo tenía
         const timeStr = item.duration ? ` | ⏱ ${formatTime(item.duration)}` : '';
         
         row.innerHTML = `<span>📅 ${item.dateStr}</span> <span>⭐ ${item.stars} | 🎯 ${item.correct}/${item.total}${timeStr}</span>`;
@@ -1620,7 +1618,7 @@
     document.getElementById('btnStart').addEventListener('click', () => {
       questions = generateBatch();
       currentIndex = 0;
-      sessionStartTime = Date.now(); // Iniciamos el cronómetro secreto aquí
+      sessionStartTime = Date.now();
       switchScreen('screenGame');
       renderCurrentQuestion();
     });
@@ -1899,6 +1897,13 @@
           } else {
             showUpdateUI(false);
           }
+
+          // COMPROBAR ACTUALIZACIONES EN SEGUNDO PLANO
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && navigator.onLine) {
+              reg.update().catch(() => { /* Falla silenciosamente si no hay internet real */ });
+            }
+          });
         });
 
         let refreshing = false;
