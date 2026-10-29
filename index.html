@@ -679,7 +679,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* PANTALLA MINIJUEGO CISTELLA (ANIMACIÓN FLUIDA Y UNA ÚNICA PELOTA) */
+    /* PANTALLA MINIJUEGO CISTELLA */
     .court-area {
       position: relative;
       background: linear-gradient(to bottom, #dbeafe 0%, #eff6ff 100%);
@@ -726,8 +726,8 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      left: 38%;
-      width: 24%; /* Zona verde equilibrada */
+      left: 32%;
+      width: 36%;
       background: #22c55e;
       border-radius: 6px;
     }
@@ -839,7 +839,7 @@
         <div class="minigame-top-row">
           <div class="minigame-info">
             <span class="minigame-title">🏀 <span data-i18n="mgBasketTitle">Tiros a Canasta</span></span>
-            <span class="minigame-sub" id="mgDailyLimitText">Máx. 2 al día | Coste: 3 ⭐</span>
+            <span class="minigame-sub" id="mgDailyLimitText"></span>
           </div>
           <button class="minigame-btn" id="btnPlayBasket" data-i18n="mgPlayBtn">Jugar (3 ⭐)</button>
         </div>
@@ -847,7 +847,7 @@
         <div>
           <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; color: #b45309; margin-bottom: 2px;">
             <span data-i18n="mgDailyGoalLabel">Pase diario hoy:</span>
-            <span id="mgProgressCount">0 / 10 cuentas</span>
+            <span id="mgProgressCount">0 / 10 comptes</span>
           </div>
           <div class="mg-progress-bar-container">
             <div class="mg-progress-bar-fill" id="mgProgressBarFill"></div>
@@ -935,7 +935,7 @@
     <!-- PANTALLA 3: RESULTADOS -->
     <div id="screenResults" class="screen">
       <div class="results-header">
-        <h2 id="resTitle" style="font-size: 1.5rem; font-weight: 900;">¡Muy bien hecho!</h2>
+        <h2 id="resTitle" style="font-size: 1.5rem; font-weight: 900;" data-i18n="resTitleDefault">¡Muy bien hecho!</h2>
         <div class="stars-row" id="starsRow">
           <span class="star-icon">★</span>
           <span class="star-icon">★</span>
@@ -992,7 +992,7 @@
       <button class="start-btn" id="btnPrintPDF" style="background: var(--primary); box-shadow: 0 5px 0 var(--primary-dark);" data-i18n="btnPDF">🖨️ Guardar Informe PDF</button>
     </div>
 
-    <!-- PANTALLA 5: MINIJUEGO DE BALONCESTO (ANIMACIÓN FLUIDA Y UNA ÚNICA PELOTA) -->
+    <!-- PANTALLA 5: MINIJUEGO DE BALONCESTO -->
     <div id="screenBasket" class="screen">
       <div class="game-top">
         <button class="back-btn" id="btnQuitBasket" data-i18n="btnQuit">✖ Salir</button>
@@ -1083,7 +1083,10 @@
         mgBasketDone: "¡Partida finalizada! Canastas:",
         mgDailyGoalLabel: "Pase diario hoy:",
         mgPlayBtn: "Jugar (3 ⭐)",
-        mgShootBtn: "¡TIRAR! 🏀"
+        mgShootBtn: "¡TIRAR! 🏀",
+        mgCardSub: (plays, cost) => `Máx. 2 al día | Coste: ${cost} ⭐`,
+        mgCardInfo: (plays, cost) => `Hoy llevas ${plays}/2 partidas | Coste: ${cost} ⭐`,
+        resTitleDefault: "¡Muy bien hecho!"
       },
       ca: {
         appTitle: "Mates 1r",
@@ -1148,7 +1151,10 @@
         mgBasketDone: "Partida acabada! Cistelles:",
         mgDailyGoalLabel: "Pas diari avui:",
         mgPlayBtn: "Jugar (3 ⭐)",
-        mgShootBtn: "TIRAR! 🏀"
+        mgShootBtn: "TIRAR! 🏀",
+        mgCardSub: (plays, cost) => `Màx. 2 al dia | Cost: ${cost} ⭐`,
+        mgCardInfo: (plays, cost) => `Avui portes ${plays}/2 partides | Cost: ${cost} ⭐`,
+        resTitleDefault: "Molt bé fet!"
       },
       en: {
         appTitle: "Math 1st",
@@ -1213,7 +1219,10 @@
         mgBasketDone: "Game over! Baskets:",
         mgDailyGoalLabel: "Daily pass today:",
         mgPlayBtn: "Play (3 ⭐)",
-        mgShootBtn: "SHOOT! 🏀"
+        mgShootBtn: "SHOOT! 🏀",
+        mgCardSub: (plays, cost) => `Max 2/day | Cost: ${cost} ⭐`,
+        mgCardInfo: (plays, cost) => `Today you played ${plays}/2 | Cost: ${cost} ⭐`,
+        resTitleDefault: "Awesome job!"
       }
     };
 
@@ -1480,9 +1489,10 @@
       const plays = getTodayBasketPlays();
       const stars = getSpendableStars();
 
+      const unitWord = (currentLang === 'ca') ? 'comptes' : (currentLang === 'en' ? 'problems' : 'cuentas');
       const progressPercent = Math.min(100, Math.round((solvedToday / 10) * 100));
       fillBar.style.width = `${progressPercent}%`;
-      countLabel.textContent = `${solvedToday} / 10 cuentas`;
+      countLabel.textContent = `${solvedToday} / 10 ${unitWord}`;
 
       const playBtnText = i18n[currentLang].mgPlayBtn || "Jugar (3 ⭐)";
 
@@ -1493,15 +1503,15 @@
       } else if (solvedToday < 10) {
         btn.disabled = true;
         btn.textContent = playBtnText;
-        infoText.textContent = `${i18n[currentLang].mgNeedWork} | Hoy: ${solvedToday}/10`;
+        infoText.textContent = `${i18n[currentLang].mgNeedWork}`;
       } else if (stars < 3) {
         btn.disabled = true;
         btn.textContent = playBtnText;
-        infoText.textContent = `${i18n[currentLang].mgNeedStars} | Hoy: ${plays}/2`;
+        infoText.textContent = `${i18n[currentLang].mgNeedStars}`;
       } else {
         btn.disabled = false;
         btn.textContent = playBtnText;
-        infoText.textContent = `Hoy llevas ${plays}/2 partidas | Coste: 3 ⭐`;
+        infoText.textContent = i18n[currentLang].mgCardInfo(plays, 3);
       }
     }
 
@@ -1946,7 +1956,7 @@
       });
     }
 
-    /* --- LÓGICA MINIJUEGO DE BALONCESTO (ANIMACIÓN DE PARÁBOLA LIMPIA Y UNA ÚNICA PELOTA) --- */
+    /* --- LÓGICA MINIJUEGO DE BALONCESTO (8 TIROS, 3 ESTRELLAS) --- */
     function startBasketMinigame() {
       if (!deductSpendableStars(3)) return; 
       recordBasketPlay();
@@ -1965,7 +1975,8 @@
 
     function updateBasketShotCounter() {
       const currentShot = 9 - basketShotsLeft;
-      document.getElementById('basketCounterText').textContent = `${i18n[currentLang].mgBasketShot} ${currentShot} / 8`;
+      const shotLabel = i18n[currentLang].mgBasketShot || "Tiro";
+      document.getElementById('basketCounterText').textContent = `${shotLabel} ${currentShot} / 8`;
     }
 
     function startMeter() {
@@ -2008,13 +2019,11 @@
       shootingLocked = true;
       clearInterval(meterInterval);
 
-      // Zona verde equilibrada (38% a 62%)
-      const hit = meterPos >= 38 && meterPos <= 62;
+      const hit = meterPos >= 32 && meterPos <= 68;
       const ball = document.getElementById('basketBall');
       const hoop = document.getElementById('basketHoop');
       const fb = document.getElementById('basketFeedback');
 
-      // Animación de parábola fluida con una única pelota
       ball.style.transition = 'all 0.65s cubic-bezier(0.2, 0.8, 0.4, 1)';
 
       if (hit) {
@@ -2031,7 +2040,7 @@
           setTimeout(() => hoop.style.transform = 'scale(1) rotate(0deg)', 250);
         }, 520);
       } else {
-        const offset = meterPos < 38 ? '-120%' : '20%';
+        const offset = meterPos < 32 ? '-120%' : '20%';
         ball.style.bottom = '170px';
         ball.style.left = '50%';
         ball.style.transform = `translateX(${offset}) scale(0.5) rotate(-180deg)`;
@@ -2055,7 +2064,8 @@
         } else {
           soundFanfare();
           fb.style.color = 'var(--primary)';
-          fb.textContent = `${i18n[currentLang].mgBasketDone} ${basketScore} / 8 ⭐`;
+          const doneMsg = i18n[currentLang].mgBasketDone || "Partida finalizada! Canastas:";
+          fb.textContent = `${doneMsg} ${basketScore} / 8 ⭐`;
           setTimeout(() => {
             switchScreen('screenSetup');
             updateBasketCardUI();
