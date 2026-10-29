@@ -679,7 +679,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* PANTALLA MINIJUEGO CISTELLA */
+    /* PANTALLA MINIJUEGO CISTELLA (ZONA VERDE MÁS ESTRECHA) */
     .court-area {
       position: relative;
       background: linear-gradient(to bottom, #dbeafe 0%, #eff6ff 100%);
@@ -726,8 +726,8 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      left: 32%;
-      width: 36%;
+      left: 42%;
+      width: 16%; /* Zona verde reducida para mayor precisión y reto */
       background: #22c55e;
       border-radius: 6px;
     }
@@ -743,11 +743,16 @@
       box-shadow: 0 0 6px rgba(220, 38, 38, 0.6);
     }
 
+    /* ESTILOS OPTIMIZADOS PARA IMPRESIÓN Y PDF */
     @media print {
-      body { background: white; padding: 0; }
-      .header, .keypad, .start-btn, .back-btn, .stats-tabs, #screenSetup, #screenGame, #screenBasket { display: none !important; }
-      #screenStats { display: flex !important; border: none; box-shadow: none; padding: 0; }
-      .app-container { max-width: 100%; }
+      body { background: white !important; padding: 0 !important; color: #000 !important; }
+      .header, .keypad, .start-btn, .back-btn, .stats-tabs, #screenSetup, #screenGame, #screenBasket, .icon-btn, .lang-select { display: none !important; }
+      #screenStats { display: flex !important; border: none !important; box-shadow: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
+      .app-container { max-width: 100% !important; width: 100% !important; gap: 8px !important; }
+      .stats-summary-card { border: 1px solid #cbd5e1 !important; padding: 8px !important; background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .review-list { max-height: none !important; overflow: visible !important; gap: 4px !important; }
+      .review-item { padding: 6px 10px !important; font-size: 0.85rem !important; border: 1px solid #e2e8f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; page-break-inside: avoid; }
+      @page { size: portrait; margin: 10mm; }
     }
   </style>
 </head>
@@ -2019,7 +2024,8 @@
       shootingLocked = true;
       clearInterval(meterInterval);
 
-      const hit = meterPos >= 32 && meterPos <= 68;
+      // Zona verde ajustada y más estrecha (42% a 58%) para exigir puntería real
+      const hit = meterPos >= 42 && meterPos <= 58;
       const ball = document.getElementById('basketBall');
       const hoop = document.getElementById('basketHoop');
       const fb = document.getElementById('basketFeedback');
@@ -2040,7 +2046,7 @@
           setTimeout(() => hoop.style.transform = 'scale(1) rotate(0deg)', 250);
         }, 520);
       } else {
-        const offset = meterPos < 32 ? '-120%' : '20%';
+        const offset = meterPos < 42 ? '-120%' : '20%';
         ball.style.bottom = '170px';
         ball.style.left = '50%';
         ball.style.transform = `translateX(${offset}) scale(0.5) rotate(-180deg)`;
