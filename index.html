@@ -1293,15 +1293,32 @@
       }
     }
 
+    // ALGORITMO MEJORADO: Evita repeticiones exactas y resultados consecutivos iguales
     function generateBatch() {
       const list = [];
       const seen = new Set();
+      let lastAns = null; 
+
       for (let i = 0; i < config.count; i++) {
         let q = null;
-        for (let tries = 0; tries < 25; tries++) {
+        for (let tries = 0; tries < 50; tries++) {
           q = generateSingleQuestion(config.type, config.digits, config.carry);
-          const key = `${q.a}${q.op}${q.b}`;
-          if (!seen.has(key)) { seen.add(key); break; }
+          
+          const key1 = `${q.a}${q.op}${q.b}`;
+          const key2 = `${q.b}${q.op}${q.a}`; 
+
+          if (!seen.has(key1) && !seen.has(key2) && q.ans !== lastAns) {
+            seen.add(key1);
+            if (q.op === 'sum') seen.add(key2);
+            lastAns = q.ans;
+            break;
+          }
+          
+          if (tries === 49) {
+             seen.add(key1);
+             if (q.op === 'sum') seen.add(key2);
+             lastAns = q.ans;
+          }
         }
         list.push({ ...q, userAns: null, isCorrect: false });
       }
@@ -1314,12 +1331,11 @@
       locked = false;
       const q = questions[currentIndex];
       
-      // BLOQUEAMOS LA CUADRÍCULA PARA TODA LA PARTIDA (Evita saltos laterales)
       const maxBoxesInBatch = Math.max(...questions.map(qu => getRequiredBoxes(qu)));
       const effectiveGridDigits = (config.digits === 1 && config.carry === 'yes') ? 2 : config.digits;
       const maxColSpan = Math.max(effectiveGridDigits, maxBoxesInBatch);
       
-      const numBoxes = getRequiredBoxes(q); // Cajas de input para la pregunta actual
+      const numBoxes = getRequiredBoxes(q); 
       
       userDigits = ['', '', '', ''];
       carryMarks = [0, 0, 0, 0];
@@ -1356,7 +1372,6 @@
           if (c >= 4 - maxColSpan && c < 3) {
             const circle = document.createElement('div');
             circle.className = 'carry-circle';
-            // Magia visual: Si es suma le damos interacción, si es resta lo hacemos invisible
             if (q.op === 'sum') {
               circle.addEventListener('click', () => {
                 carryMarks[c] = carryMarks[c] === 0 ? 1 : 0;
@@ -1364,7 +1379,7 @@
                 circle.classList.toggle('active', carryMarks[c] === 1);
               });
             } else {
-              circle.style.visibility = 'hidden'; // Ocupa espacio pero no se ve (evita el salto vertical)
+              circle.style.visibility = 'hidden'; 
             }
             cell.appendChild(circle);
           }
