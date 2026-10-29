@@ -343,7 +343,6 @@
       color: #64748b;
     }
 
-    /* Barra de progreso diaria para el minijuego */
     .mg-progress-bar-container {
       width: 100%;
       height: 8px;
@@ -679,7 +678,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* PANTALLA MINIJUEGO BASKET */
+    /* PANTALLA MINIJUEGO CISTELLA */
     .court-area {
       position: relative;
       background: #f8fafc;
@@ -841,7 +840,7 @@
         <!-- Barra de progreso diaria (10 cuentas hoy) -->
         <div>
           <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; color: #b45309; margin-bottom: 2px;">
-            <span id="mgProgressLabel">Pase diario hoy:</span>
+            <span data-i18n="mgDailyGoalLabel">Pase diario hoy:</span>
             <span id="mgProgressCount">0 / 10 cuentas</span>
           </div>
           <div class="mg-progress-bar-container">
@@ -1131,14 +1130,14 @@
         modalSave: "Desar canvis",
         appUpdated: "Aplicació actualitzada",
         checking: "Comprovant...",
-        mgBasketTitle: "Tirs a Canastra",
+        mgBasketTitle: "Tirs a Cistella",
         mgLimitReached: "Límit d'avui assolit! Demà més 🏀",
         mgNeedWork: "Fes 10 comptes avui per desbloquejar 🔒",
         mgNeedStars: "Et falten estrelles (5 ⭐)",
         mgBasketShot: "Tir",
-        mgBasketHit: "CANASTRA! 🌟🏀",
+        mgBasketHit: "CISTELLA! 🌟🏀",
         mgBasketMiss: "Rebot! Gairebé... 💨",
-        mgBasketDone: "Partida acabada! Canastres:",
+        mgBasketDone: "Partida acabada! Cistelles:",
         mgDailyGoalLabel: "Pas diari avui:"
       },
       en: {
@@ -1431,7 +1430,6 @@
       const plays = getTodayBasketPlays();
       const stars = getSpendableStars();
 
-      // Barra de progreso diaria (Meta: 10 cuentas)
       const progressPercent = Math.min(100, Math.round((solvedToday / 10) * 100));
       fillBar.style.width = `${progressPercent}%`;
       countLabel.textContent = `${solvedToday} / 10 cuentas`;
@@ -1889,7 +1887,7 @@
       if (!deductSpendableStars(5)) return;
       recordBasketPlay();
 
-      basketShotsLeft = 8; // Actualizado a 8 intentos
+      basketShotsLeft = 8;
       basketScore = 0;
       shootingLocked = false;
       document.getElementById('basketScoreBadge').textContent = `🏀 ${basketScore}`;
