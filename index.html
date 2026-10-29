@@ -101,7 +101,7 @@
       font-weight: 800;
       color: var(--primary);
       white-space: nowrap;
-      cursor: pointer; /* Indica que se puede pulsar para el modo dios */
+      cursor: pointer;
     }
 
     .header-badges {
@@ -679,7 +679,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* PANTALLA MINIJUEGO CISTELLA */
+    /* PANTALLA MINIJUEGO CISTELLA (ANIMACIÓN FLUIDA Y UNA ÚNICA PELOTA) */
     .court-area {
       position: relative;
       background: linear-gradient(to bottom, #dbeafe 0%, #eff6ff 100%);
@@ -704,10 +704,10 @@
     }
 
     .ball {
-      font-size: 3rem;
+      font-size: 2.8rem;
       z-index: 20;
       position: absolute;
-      bottom: 25px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
     }
@@ -726,8 +726,8 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      left: 32%;
-      width: 36%;
+      left: 38%;
+      width: 24%; /* Zona verde equilibrada */
       background: #22c55e;
       border-radius: 6px;
     }
@@ -992,7 +992,7 @@
       <button class="start-btn" id="btnPrintPDF" style="background: var(--primary); box-shadow: 0 5px 0 var(--primary-dark);" data-i18n="btnPDF">🖨️ Guardar Informe PDF</button>
     </div>
 
-    <!-- PANTALLA 5: MINIJUEGO DE BALONCESTO -->
+    <!-- PANTALLA 5: MINIJUEGO DE BALONCESTO (ANIMACIÓN FLUIDA Y UNA ÚNICA PELOTA) -->
     <div id="screenBasket" class="screen">
       <div class="game-top">
         <button class="back-btn" id="btnQuitBasket" data-i18n="btnQuit">✖ Salir</button>
@@ -1001,7 +1001,7 @@
       </div>
 
       <div class="court-area">
-        <div class="basket-container" id="basketHoop">🏀🗑️</div>
+        <div class="basket-container" id="basketHoop">🗑️</div>
         <div class="ball" id="basketBall">🏀</div>
       </div>
 
@@ -1372,8 +1372,8 @@
         if (p) {
           p.spendableStars = (p.spendableStars || 0) + 50;
           const today = getTodayDateStr();
-          p.dailyProblems = { date: today, count: 10 }; // Desbloquea el minijuego al instante
-          p.basketPlays = { date: today, count: 0 }; // Resetea las partidas a 0
+          p.dailyProblems = { date: today, count: 10 }; 
+          p.basketPlays = { date: today, count: 0 }; 
           saveProfiles(profiles);
           loadProfileData();
           alert("👑 MODO ADMIN ACTIVADO: +50 ⭐ y Minijuego Desbloqueado para pruebas.");
@@ -1602,16 +1602,17 @@
     function soundError() { playTone(220, 'triangle', 0.2, 0); playTone(180, 'triangle', 0.25, 0.15); }
     function soundFanfare() { 
       if (!soundEnabled) return;
-      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => playTone(f, 'sine', 0.22, i * 0.12)); 
+      [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => playTone(f, 'sine', 0.25, i * 0.1)); 
     }
     function soundSwish() { 
       if (!soundEnabled) return;
-      playTone(587.33, 'sine', 0.1, 0); 
-      playTone(880, 'sine', 0.25, 0.08); 
+      playTone(440, 'sine', 0.08, 0); 
+      playTone(659.25, 'sine', 0.12, 0.08);
+      playTone(1046.5, 'sine', 0.25, 0.16); 
     }
     function soundRim() { 
       if (!soundEnabled) return;
-      playTone(140, 'sawtooth', 0.2, 0); 
+      playTone(150, 'sawtooth', 0.2, 0); 
     }
 
     /* --- FORMATO TIEMPO --- */
@@ -1945,7 +1946,7 @@
       });
     }
 
-    /* --- LÓGICA MINIJUEGO DE BALONCESTO (8 TIROS, 3 ESTRELLAS) --- */
+    /* --- LÓGICA MINIJUEGO DE BALONCESTO (ANIMACIÓN DE PARÁBOLA LIMPIA Y UNA ÚNICA PELOTA) --- */
     function startBasketMinigame() {
       if (!deductSpendableStars(3)) return; 
       recordBasketPlay();
@@ -1983,9 +1984,10 @@
     function resetBallPosition() {
       const ball = document.getElementById('basketBall');
       ball.style.transition = 'none';
-      ball.style.bottom = '25px';
+      ball.style.bottom = '20px';
       ball.style.left = '50%';
       ball.style.transform = 'translateX(-50%) scale(1)';
+      ball.style.opacity = '1';
     }
 
     document.getElementById('btnPlayBasket').addEventListener('click', startBasketMinigame);
@@ -2006,35 +2008,38 @@
       shootingLocked = true;
       clearInterval(meterInterval);
 
-      const hit = meterPos >= 32 && meterPos <= 68;
+      // Zona verde equilibrada (38% a 62%)
+      const hit = meterPos >= 38 && meterPos <= 62;
       const ball = document.getElementById('basketBall');
       const hoop = document.getElementById('basketHoop');
       const fb = document.getElementById('basketFeedback');
 
-      ball.style.transition = 'all 0.6s cubic-bezier(0.15, 0.85, 0.35, 1.1)';
+      // Animación de parábola fluida con una única pelota
+      ball.style.transition = 'all 0.65s cubic-bezier(0.2, 0.8, 0.4, 1)';
 
       if (hit) {
         ball.style.bottom = '210px';
-        ball.style.left = '78%';
-        ball.style.transform = 'translateX(-50%) scale(0.4)';
+        ball.style.left = '82%';
+        ball.style.transform = 'translateX(-50%) scale(0.35) rotate(360deg)';
         setTimeout(() => {
           soundSwish();
           basketScore++;
           document.getElementById('basketScoreBadge').textContent = `🏀 ${basketScore}`;
           fb.style.color = 'var(--green)';
           fb.textContent = i18n[currentLang].mgBasketHit;
-          hoop.style.transform = 'scale(1.35) rotate(10deg)';
+          hoop.style.transform = 'scale(1.4) rotate(12deg)';
           setTimeout(() => hoop.style.transform = 'scale(1) rotate(0deg)', 250);
-        }, 500);
+        }, 520);
       } else {
-        const offset = meterPos < 32 ? '-130%' : '30%';
+        const offset = meterPos < 38 ? '-120%' : '20%';
         ball.style.bottom = '170px';
-        ball.style.transform = `translateX(${offset}) scale(0.6)`;
+        ball.style.left = '50%';
+        ball.style.transform = `translateX(${offset}) scale(0.5) rotate(-180deg)`;
         setTimeout(() => {
           soundRim();
           fb.style.color = 'var(--red)';
           fb.textContent = i18n[currentLang].mgBasketMiss;
-        }, 500);
+        }, 520);
       }
 
       setTimeout(() => {
@@ -2056,7 +2061,7 @@
             updateBasketCardUI();
           }, 2400);
         }
-      }, 1200);
+      }, 1300);
     });
 
     /* --- ESTADÍSTICAS --- */
