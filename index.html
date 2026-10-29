@@ -1313,7 +1313,14 @@
     function renderCurrentQuestion() {
       locked = false;
       const q = questions[currentIndex];
-      const numBoxes = getRequiredBoxes(q);
+      
+      // BLOQUEAMOS LA CUADRÍCULA PARA TODA LA PARTIDA (Evita saltos laterales)
+      const maxBoxesInBatch = Math.max(...questions.map(qu => getRequiredBoxes(qu)));
+      const effectiveGridDigits = (config.digits === 1 && config.carry === 'yes') ? 2 : config.digits;
+      const maxColSpan = Math.max(effectiveGridDigits, maxBoxesInBatch);
+      
+      const numBoxes = getRequiredBoxes(q); // Cajas de input para la pregunta actual
+      
       userDigits = ['', '', '', ''];
       carryMarks = [0, 0, 0, 0];
       activeCol = 3;
@@ -1326,14 +1333,12 @@
       const grid = document.getElementById('mathGrid');
       grid.innerHTML = '';
 
-      const effectiveGridDigits = (config.digits === 1 && config.carry === 'yes') ? 2 : config.digits;
-      const maxColSpan = Math.max(effectiveGridDigits, numBoxes);
-
       const strA = String(q.a).padStart(4, ' ');
       const strB = String(q.b).padStart(4, ' ');
       const headers = ['', 'C', 'D', 'U'];
       const headerClasses = ['', 'col-c', 'col-d', 'col-u'];
 
+      // Fila 1: Cabeceras
       grid.appendChild(document.createElement('div'));
       for (let c = 0; c < 4; c++) {
         const h = document.createElement('div');
@@ -1343,25 +1348,31 @@
         grid.appendChild(h);
       }
 
+      // Fila 2: Llevadas (Redonditas)
       if (config.carry === 'yes') {
         grid.appendChild(document.createElement('div'));
         for (let c = 0; c < 4; c++) {
           const cell = document.createElement('div');
-          // Solo se añade el círculo visual si es una SUMA. Si es resta queda el espacio vacío.
-          if (q.op === 'sum' && c >= 4 - maxColSpan && c < 3) {
+          if (c >= 4 - maxColSpan && c < 3) {
             const circle = document.createElement('div');
             circle.className = 'carry-circle';
-            circle.addEventListener('click', () => {
-              carryMarks[c] = carryMarks[c] === 0 ? 1 : 0;
-              circle.textContent = carryMarks[c] ? '1' : '';
-              circle.classList.toggle('active', carryMarks[c] === 1);
-            });
+            // Magia visual: Si es suma le damos interacción, si es resta lo hacemos invisible
+            if (q.op === 'sum') {
+              circle.addEventListener('click', () => {
+                carryMarks[c] = carryMarks[c] === 0 ? 1 : 0;
+                circle.textContent = carryMarks[c] ? '1' : '';
+                circle.classList.toggle('active', carryMarks[c] === 1);
+              });
+            } else {
+              circle.style.visibility = 'hidden'; // Ocupa espacio pero no se ve (evita el salto vertical)
+            }
             cell.appendChild(circle);
           }
           grid.appendChild(cell);
         }
       }
 
+      // Fila 3: Operando A
       grid.appendChild(document.createElement('div'));
       for (let c = 0; c < 4; c++) {
         const d = document.createElement('div');
@@ -1370,6 +1381,7 @@
         grid.appendChild(d);
       }
 
+      // Fila 4: Símbolo + Operando B
       const sym = document.createElement('div');
       sym.className = 'op-symbol';
       sym.textContent = q.op === 'sum' ? '+' : '−';
@@ -1382,10 +1394,12 @@
         grid.appendChild(d);
       }
 
+      // Fila 5: Línea de separación
       const line = document.createElement('div');
       line.className = 'math-line';
       grid.appendChild(line);
 
+      // Fila 6: Cajas de respuesta
       grid.appendChild(document.createElement('div'));
       const firstBoxCol = 4 - numBoxes;
       for (let c = 0; c < 4; c++) {
