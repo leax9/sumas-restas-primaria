@@ -679,7 +679,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* PANTALLA MINIJUEGO CISTELLA (ZONA VERDE EQUILIBRADA AL 16%) */
+    /* PANTALLA MINIJUEGO CISTELLA */
     .court-area {
       position: relative;
       background: linear-gradient(to bottom, #dbeafe 0%, #eff6ff 100%);
@@ -726,8 +726,8 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      left: 42%;
-      width: 16%; /* Zona verde calibrada al 16% (punto medio perfecto) */
+      left: 40%;
+      width: 20%; /* Zona verde fijada exactamente al 20% (el doble de la anterior y punto ideal) */
       background: #22c55e;
       border-radius: 6px;
     }
@@ -2024,8 +2024,8 @@
       shootingLocked = true;
       clearInterval(meterInterval);
 
-      // Zona verde calibrada al 16% de ancho (punto medio exacto)
-      const hit = meterPos >= 42 && meterPos <= 58;
+      // Zona verde configurada exactamente al 20% de ancho (punto medio perfecto)
+      const hit = meterPos >= 40 && meterPos <= 60;
       const ball = document.getElementById('basketBall');
       const hoop = document.getElementById('basketHoop');
       const fb = document.getElementById('basketFeedback');
@@ -2046,7 +2046,7 @@
           setTimeout(() => hoop.style.transform = 'scale(1) rotate(0deg)', 250);
         }, 520);
       } else {
-        const offset = meterPos < 42 ? '-120%' : '20%';
+        const offset = meterPos < 40 ? '-120%' : '20%';
         ball.style.bottom = '170px';
         ball.style.left = '50%';
         ball.style.transform = `translateX(${offset}) scale(0.5) rotate(-180deg)`;
