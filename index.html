@@ -681,10 +681,10 @@
     /* PANTALLA MINIJUEGO CISTELLA */
     .court-area {
       position: relative;
-      background: #f8fafc;
+      background: linear-gradient(to bottom, #dbeafe 0%, #eff6ff 100%);
       border: 3px solid #cbd5e1;
       border-radius: 18px;
-      height: 280px;
+      height: 300px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -693,27 +693,29 @@
       padding: 16px;
     }
 
-    .basket-hoop {
-      font-size: 3.5rem;
-      z-index: 1;
-      transition: transform 0.2s;
+    .basket-container {
+      position: absolute;
+      top: 15px;
+      right: 25px;
+      font-size: 3.8rem;
+      z-index: 10;
+      transition: transform 0.2s ease;
     }
 
     .ball {
       font-size: 3rem;
-      z-index: 2;
-      transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      z-index: 20;
       position: absolute;
-      bottom: 20px;
+      bottom: 25px;
       left: 50%;
       transform: translateX(-50%);
     }
 
     .meter-container {
       width: 100%;
-      height: 24px;
+      height: 28px;
       background: #e2e8f0;
-      border-radius: 12px;
+      border-radius: 14px;
       position: relative;
       overflow: hidden;
       border: 2px solid #cbd5e1;
@@ -723,19 +725,21 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      left: 40%;
-      width: 20%;
+      left: 32%;
+      width: 36%;
       background: #22c55e;
+      border-radius: 6px;
     }
 
     .meter-cursor {
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 8px;
+      width: 10px;
       background: #dc2626;
-      border-radius: 4px;
+      border-radius: 5px;
       left: 0%;
+      box-shadow: 0 0 6px rgba(220, 38, 38, 0.6);
     }
 
     @media print {
@@ -758,6 +762,7 @@
         <div class="title">✏️ <span data-i18n="appTitle">Mates 1.º</span></div>
       </div>
       <div class="header-badges">
+        <button class="icon-btn" id="btnToggleSound" title="Activar/Desactivar Sonido">🔊</button>
         <button class="icon-btn" id="btnOpenStats" title="Estadísticas">📊</button>
         <select class="lang-select" id="langSelect">
           <option value="es" selected>🇪🇸 ES</option>
@@ -833,9 +838,9 @@
         <div class="minigame-top-row">
           <div class="minigame-info">
             <span class="minigame-title">🏀 <span data-i18n="mgBasketTitle">Tiros a Canasta</span></span>
-            <span class="minigame-sub" id="mgDailyLimitText">Máx. 2 al día | Coste: 5 ⭐</span>
+            <span class="minigame-sub" id="mgDailyLimitText">Máx. 2 al día | Coste: 3 ⭐</span>
           </div>
-          <button class="minigame-btn" id="btnPlayBasket">Jugar (5 ⭐)</button>
+          <button class="minigame-btn" id="btnPlayBasket" data-i18n="mgPlayBtn">Jugar (3 ⭐)</button>
         </div>
         <!-- Barra de progreso diaria (10 cuentas hoy) -->
         <div>
@@ -995,7 +1000,7 @@
       </div>
 
       <div class="court-area">
-        <div class="basket-hoop" id="basketHoop">🗑️</div>
+        <div class="basket-container" id="basketHoop">🏀🗑️</div>
         <div class="ball" id="basketBall">🏀</div>
       </div>
 
@@ -1004,7 +1009,7 @@
           <div class="meter-target"></div>
           <div class="meter-cursor" id="meterCursor"></div>
         </div>
-        <button class="start-btn" id="btnShootBasket" style="background:#f59e0b; box-shadow:0 5px 0 #b45309;">¡TIRAR! 🏀</button>
+        <button class="start-btn" id="btnShootBasket" style="background:#f59e0b; box-shadow:0 5px 0 #b45309;" data-i18n="mgShootBtn">¡TIRAR! 🏀</button>
       </div>
 
       <div class="feedback-msg" id="basketFeedback"></div>
@@ -1070,12 +1075,14 @@
         mgBasketTitle: "Tiros a Canasta",
         mgLimitReached: "¡Cupo de hoy listo! Mañana más 🏀",
         mgNeedWork: "Haz 10 cuentas hoy para desbloquear 🔒",
-        mgNeedStars: "Te faltan estrellas (5 ⭐)",
+        mgNeedStars: "Te faltan estrellas (3 ⭐)",
         mgBasketShot: "Tiro",
         mgBasketHit: "¡CANASTA! 🌟🏀",
         mgBasketMiss: "¡Rebote! Casi... 💨",
         mgBasketDone: "¡Partida finalizada! Canastas:",
-        mgDailyGoalLabel: "Pase diario hoy:"
+        mgDailyGoalLabel: "Pase diario hoy:",
+        mgPlayBtn: "Jugar (3 ⭐)",
+        mgShootBtn: "¡TIRAR! 🏀"
       },
       ca: {
         appTitle: "Mates 1r",
@@ -1133,12 +1140,14 @@
         mgBasketTitle: "Tirs a Cistella",
         mgLimitReached: "Límit d'avui assolit! Demà més 🏀",
         mgNeedWork: "Fes 10 comptes avui per desbloquejar 🔒",
-        mgNeedStars: "Et falten estrelles (5 ⭐)",
+        mgNeedStars: "Et falten estrelles (3 ⭐)",
         mgBasketShot: "Tir",
         mgBasketHit: "CISTELLA! 🌟🏀",
         mgBasketMiss: "Rebot! Gairebé... 💨",
         mgBasketDone: "Partida acabada! Cistelles:",
-        mgDailyGoalLabel: "Pas diari avui:"
+        mgDailyGoalLabel: "Pas diari avui:",
+        mgPlayBtn: "Jugar (3 ⭐)",
+        mgShootBtn: "TIRAR! 🏀"
       },
       en: {
         appTitle: "Math 1st",
@@ -1196,17 +1205,31 @@
         mgBasketTitle: "Free Throws",
         mgLimitReached: "Today's limit reached! More tomorrow 🏀",
         mgNeedWork: "Do 10 problems today to unlock 🔒",
-        mgNeedStars: "Need more stars (5 ⭐)",
+        mgNeedStars: "Need more stars (3 ⭐)",
         mgBasketShot: "Shot",
         mgBasketHit: "SWISH! 🌟🏀",
         mgBasketMiss: "Rim out! Almost... 💨",
         mgBasketDone: "Game over! Baskets:",
-        mgDailyGoalLabel: "Daily pass today:"
+        mgDailyGoalLabel: "Daily pass today:",
+        mgPlayBtn: "Play (3 ⭐)",
+        mgShootBtn: "SHOOT! 🏀"
       }
     };
 
     let currentLang = localStorage.getItem('app_lang') || 'es';
+    let soundEnabled = localStorage.getItem('app_sound') !== 'false';
     
+    function updateSoundButtonUI() {
+      const btn = document.getElementById('btnToggleSound');
+      if (btn) btn.textContent = soundEnabled ? '🔊' : '🔇';
+    }
+
+    document.getElementById('btnToggleSound').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem('app_sound', soundEnabled);
+      updateSoundButtonUI();
+    });
+
     function setLanguage(lang) {
       if (!i18n[lang]) lang = 'es';
       currentLang = lang;
@@ -1434,22 +1457,24 @@
       fillBar.style.width = `${progressPercent}%`;
       countLabel.textContent = `${solvedToday} / 10 cuentas`;
 
+      const playBtnText = i18n[currentLang].mgPlayBtn || "Jugar (3 ⭐)";
+
       if (plays >= 2) {
         btn.disabled = true;
         btn.textContent = "🔒 0/2";
         infoText.textContent = i18n[currentLang].mgLimitReached;
       } else if (solvedToday < 10) {
         btn.disabled = true;
-        btn.textContent = "Jugar (5 ⭐)";
+        btn.textContent = playBtnText;
         infoText.textContent = `${i18n[currentLang].mgNeedWork} | Hoy: ${solvedToday}/10`;
-      } else if (stars < 5) {
+      } else if (stars < 3) {
         btn.disabled = true;
-        btn.textContent = "Jugar (5 ⭐)";
+        btn.textContent = playBtnText;
         infoText.textContent = `${i18n[currentLang].mgNeedStars} | Hoy: ${plays}/2`;
       } else {
         btn.disabled = false;
-        btn.textContent = "Jugar (5 ⭐)";
-        infoText.textContent = `Hoy llevas ${plays}/2 partidas | Coste: 5 ⭐`;
+        btn.textContent = playBtnText;
+        infoText.textContent = `Hoy llevas ${plays}/2 partidas | Coste: 3 ⭐`;
       }
     }
 
@@ -1526,10 +1551,11 @@
       return { tandas: totalTandas, accuracy, stars: totalStars, logs };
     }
 
-    /* --- AUDIO SINTETIZADO --- */
+    /* --- AUDIO SINTETIZADO CONDICIONAL --- */
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
     function playTone(freq, type, duration, delay = 0) {
+      if (!soundEnabled) return;
       try {
         if (!audioCtx) audioCtx = new AudioCtx();
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -1547,9 +1573,19 @@
     }
     function soundSuccess() { playTone(523.25, 'sine', 0.12, 0); playTone(659.25, 'sine', 0.18, 0.1); }
     function soundError() { playTone(220, 'triangle', 0.2, 0); playTone(180, 'triangle', 0.25, 0.15); }
-    function soundFanfare() { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => playTone(f, 'sine', 0.22, i * 0.12)); }
-    function soundSwish() { playTone(880, 'sine', 0.1, 0); playTone(1174, 'sine', 0.2, 0.08); }
-    function soundRim() { playTone(160, 'square', 0.15, 0); }
+    function soundFanfare() { 
+      if (!soundEnabled) return;
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => playTone(f, 'sine', 0.22, i * 0.12)); 
+    }
+    function soundSwish() { 
+      if (!soundEnabled) return;
+      playTone(587.33, 'sine', 0.1, 0); 
+      playTone(880, 'sine', 0.25, 0.08); 
+    }
+    function soundRim() { 
+      if (!soundEnabled) return;
+      playTone(140, 'sawtooth', 0.2, 0); 
+    }
 
     /* --- FORMATO TIEMPO --- */
     function formatTime(ms) {
@@ -1854,7 +1890,7 @@
       else if (ratio >= 0.5) { starsEarned = 2; titleText = i18n[currentLang].titleGood; }
 
       addSpendableStars(starsEarned);
-      recordSolvedProblems(total); // Registra cuentas hechas hoy para el pase diario (10 cuentas)
+      recordSolvedProblems(total);
       recordSessionStats(correctCount, total, starsEarned, sessionDurationMs);
       soundFanfare();
 
@@ -1882,9 +1918,9 @@
       });
     }
 
-    /* --- LÓGICA MINIJUEGO DE BALONCESTO (8 TIROS, 5 ESTRELLAS) --- */
+    /* --- LÓGICA MINIJUEGO DE BALONCESTO (8 TIROS, 3 ESTRELLAS) --- */
     function startBasketMinigame() {
-      if (!deductSpendableStars(5)) return;
+      if (!deductSpendableStars(3)) return; // Coste ajustado a 3 estrellas
       recordBasketPlay();
 
       basketShotsLeft = 8;
@@ -1908,8 +1944,9 @@
       clearInterval(meterInterval);
       meterPos = 0;
       meterDir = 1;
+      // Velocidad suave de 1.2 para niños pequeños
       meterInterval = setInterval(() => {
-        meterPos += meterDir * meterSpeed;
+        meterPos += meterDir * 1.2;
         if (meterPos >= 96) meterDir = -1;
         if (meterPos <= 0) meterDir = 1;
         const cursor = document.getElementById('meterCursor');
@@ -1920,7 +1957,7 @@
     function resetBallPosition() {
       const ball = document.getElementById('basketBall');
       ball.style.transition = 'none';
-      ball.style.bottom = '20px';
+      ball.style.bottom = '25px';
       ball.style.left = '50%';
       ball.style.transform = 'translateX(-50%) scale(1)';
     }
@@ -1936,7 +1973,6 @@
     let meterPos = 0;
     let meterDir = 1;
     let meterInterval = null;
-    let meterSpeed = 2.2;
     let shootingLocked = false;
 
     document.getElementById('btnShootBasket').addEventListener('click', () => {
@@ -1944,29 +1980,31 @@
       shootingLocked = true;
       clearInterval(meterInterval);
 
-      const hit = meterPos >= 38 && meterPos <= 62;
+      // Zona verde holgada (32% a 68%) para asegurar que puedan encestar sin frustrarse
+      const hit = meterPos >= 32 && meterPos <= 68;
       const ball = document.getElementById('basketBall');
       const hoop = document.getElementById('basketHoop');
       const fb = document.getElementById('basketFeedback');
 
-      ball.style.transition = 'all 0.6s cubic-bezier(0.2, 0.8, 0.3, 1)';
+      ball.style.transition = 'all 0.6s cubic-bezier(0.15, 0.85, 0.35, 1.1)';
 
       if (hit) {
-        ball.style.bottom = '180px';
-        ball.style.transform = 'translateX(-50%) scale(0.7)';
+        ball.style.bottom = '210px';
+        ball.style.left = '78%';
+        ball.style.transform = 'translateX(-50%) scale(0.4)';
         setTimeout(() => {
           soundSwish();
           basketScore++;
           document.getElementById('basketScoreBadge').textContent = `🏀 ${basketScore}`;
           fb.style.color = 'var(--green)';
           fb.textContent = i18n[currentLang].mgBasketHit;
-          hoop.style.transform = 'scale(1.25)';
-          setTimeout(() => hoop.style.transform = 'scale(1)', 200);
+          hoop.style.transform = 'scale(1.35) rotate(10deg)';
+          setTimeout(() => hoop.style.transform = 'scale(1) rotate(0deg)', 250);
         }, 500);
       } else {
-        const offset = meterPos < 38 ? '-110%' : '10%';
-        ball.style.bottom = '160px';
-        ball.style.transform = `translateX(${offset}) scale(0.7)`;
+        const offset = meterPos < 32 ? '-130%' : '30%';
+        ball.style.bottom = '170px';
+        ball.style.transform = `translateX(${offset}) scale(0.6)`;
         setTimeout(() => {
           soundRim();
           fb.style.color = 'var(--red)';
@@ -2075,6 +2113,7 @@
 
     window.addEventListener('load', () => {
       setLanguage(currentLang);
+      updateSoundButtonUI();
       renderProfilesScreen();
       switchScreen('screenProfiles');
     });
