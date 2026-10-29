@@ -892,7 +892,8 @@
         modalNameLbl: "Nombre:",
         modalAvatarLbl: "Avatar:",
         modalCancel: "Cancelar",
-        modalSave: "Guardar cambios"
+        modalSave: "Guardar cambios",
+        appUpdated: "Aplicación actualizada"
       },
       ca: {
         appTitle: "Mates 1r",
@@ -944,7 +945,8 @@
         modalNameLbl: "Nom:",
         modalAvatarLbl: "Avatar:",
         modalCancel: "Cancel·lar",
-        modalSave: "Desar canvis"
+        modalSave: "Desar canvis",
+        appUpdated: "Aplicació actualitzada"
       },
       en: {
         appTitle: "Math 1st",
@@ -996,7 +998,8 @@
         modalNameLbl: "Name:",
         modalAvatarLbl: "Avatar:",
         modalCancel: "Cancel",
-        modalSave: "Save changes"
+        modalSave: "Save changes",
+        appUpdated: "App updated"
       }
     };
 
@@ -1900,7 +1903,7 @@
 
           // COMPROBAR ACTUALIZACIONES EN SEGUNDO PLANO
           document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && navigator.onLine) {
+            if (document.visibilityState === 'visible' && navigator.onLine && !newWorker) {
               reg.update().catch(() => { /* Falla silenciosamente si no hay internet real */ });
             }
           });
@@ -1941,12 +1944,26 @@
           }
         });
       } else {
-        container.innerHTML = `
-          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 20px; padding: 6px 14px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700; color: #166534;">
-            <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 2px rgba(34,197,94,0.2);"></span>
-            Aplicación actualizada (Última versión)
-          </div>
-        `;
+        if (!newWorker) {
+          container.innerHTML = `
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 20px; padding: 6px 14px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700; color: #166534;">
+              <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 2px rgba(34,197,94,0.2);"></span>
+              <span><span data-i18n="appUpdated">Aplicación actualizada</span> <strong id="appVersionDisplay"></strong></span>
+            </div>
+          `;
+          
+          // Recuperar la versión exacta instalada por el Service Worker
+          if ('caches' in window) {
+            caches.keys().then(keys => {
+              const cacheName = keys.find(k => k.includes('mates-primaria-v'));
+              if (cacheName) {
+                const version = cacheName.split('-').pop(); // Extrae "v25"
+                const vDisplay = document.getElementById('appVersionDisplay');
+                if (vDisplay) vDisplay.textContent = '(' + version.toUpperCase() + ')';
+              }
+            });
+          }
+        }
       }
     }
   </script>
