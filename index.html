@@ -1368,13 +1368,13 @@
       switchScreen('screenProfiles');
     });
 
-    /* --- MODO DIOS / ADMIN SECRETO (TRIPLE CLIC EN TÍTULO) --- */
+    /* --- MODO DIOS / ADMIN SECRETO (12 CLICS RÁPIDOS EN TÍTULO) --- */
     let adminClicks = 0;
     let adminTimer = null;
     document.getElementById('adminSecretTrigger').addEventListener('click', () => {
       adminClicks++;
       clearTimeout(adminTimer);
-      if (adminClicks === 3) {
+      if (adminClicks === 12) {
         adminClicks = 0;
         const profiles = getProfiles();
         const p = profiles.find(item => item.id === currentProfileId);
@@ -1390,7 +1390,7 @@
           alert("Selecciona un perfil primero para usar el Modo Admin.");
         }
       } else {
-        adminTimer = setTimeout(() => { adminClicks = 0; }, 600);
+        adminTimer = setTimeout(() => { adminClicks = 0; }, 800);
       }
     });
 
@@ -1503,11 +1503,11 @@
       } else if (solvedToday < 10) {
         btn.disabled = true;
         btn.textContent = playBtnText;
-        infoText.textContent = `${i18n[currentLang].mgNeedWork}`;
+        infoText.textContent = i18n[currentLang].mgNeedWork;
       } else if (stars < 3) {
         btn.disabled = true;
         btn.textContent = playBtnText;
-        infoText.textContent = `${i18n[currentLang].mgNeedStars}`;
+        infoText.textContent = i18n[currentLang].mgNeedStars;
       } else {
         btn.disabled = false;
         btn.textContent = playBtnText;
